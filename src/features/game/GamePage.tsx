@@ -136,7 +136,7 @@ export const GamePage = () => {
         
         <div className="flex items-center gap-1">
           <img src="/coin.png" alt="Coins" className="w-5 h-5" />
-          <span className="font-bold font-mono text-yellow-600">{coins.toFixed(2)}</span>
+          <span className="font-bold font-mono text-gray-800">{coins.toFixed(2)}</span>
         </div>
         
         <div className="flex items-center gap-1 text-gray-700 bg-light-grey px-3 py-1 rounded">
@@ -159,7 +159,7 @@ export const GamePage = () => {
               )}
               
               <div className="flex items-center gap-1 ml-auto">
-                <span className="text-yellow-600 font-mono font-bold">{currentValue.toFixed(2)}</span>
+                <span className="text-gray-800 font-mono font-bold">{currentValue.toFixed(2)}</span>
                 <img src="/coin.png" alt="Coins" className="w-5 h-5" />
               </div>
 
