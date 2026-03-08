@@ -33,7 +33,7 @@ export const LeaderboardPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchLeaderboard(1);
+    fetchLeaderboard(1, true);
   }, [fetchLeaderboard]);
 
   const handleRefresh = () => {
