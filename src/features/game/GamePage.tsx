@@ -134,11 +134,9 @@ export const GamePage = () => {
           <span className="font-medium">{playerCount}</span>
         </button>
         
-        <div className="flex items-center gap-1 text-yellow-500">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span className="font-bold font-mono">{coins.toFixed(2)}</span>
+        <div className="flex items-center gap-1">
+          <img src="/coin.png" alt="Coins" className="w-5 h-5" />
+          <span className="font-bold font-mono text-yellow-600">{coins.toFixed(2)}</span>
         </div>
         
         <div className="flex items-center gap-1 text-gray-700 bg-light-grey px-3 py-1 rounded">
@@ -161,10 +159,8 @@ export const GamePage = () => {
               )}
               
               <div className="flex items-center gap-1 ml-auto">
-                <span className="text-yellow-500 font-mono font-bold">{currentValue.toFixed(2)}</span>
-                <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 bg-yellow-600 rounded-full"></div>
-                </div>
+                <span className="text-yellow-600 font-mono font-bold">{currentValue.toFixed(2)}</span>
+                <img src="/coin.png" alt="Coins" className="w-5 h-5" />
               </div>
 
               {/* Menu Button */}

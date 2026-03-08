@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useAuthStore } from '@/stores/authStore';
 import { systemApi } from '@/api/endpoints';
+import { Disclaimer } from '@/components/Disclaimer';
 
 const FRONTEND_VERSION = '1.0.0';
 
@@ -67,13 +68,11 @@ export const LoginPage = () => {
     <div className="flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
         {/* Logo */}
-        <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-          <span className="text-white text-3xl font-bold">?</span>
-        </div>
-        
-        <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
-          Open Live Trivia
-        </h1>
+        <img
+          src="/logo.png"
+          alt="Open Live Trivia"
+          className="w-28 h-28 mx-auto mb-6"
+        />
         
         {isRegistering && (
           <div className="mb-6">
@@ -127,6 +126,10 @@ export const LoginPage = () => {
         >
           {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
         </button>
+
+        <div className="mt-6">
+          <Disclaimer />
+        </div>
       </div>
     </div>
   );
