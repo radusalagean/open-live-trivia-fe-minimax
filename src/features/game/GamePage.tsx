@@ -203,7 +203,8 @@ export const GamePage = () => {
             <div className="text-center mb-3">
               <div 
                 className={`answer-text inline-block px-2 py-0.5 ${
-                  roundWon ? 'bg-correct-answer text-white' : ''
+                  roundWon ? 'bg-correct-answer text-white' : 
+                  isRevealed ? 'bg-reveal-answer text-white' : ''
                 }`}
               >
                 {revealedAnswer || currentAnswer}
