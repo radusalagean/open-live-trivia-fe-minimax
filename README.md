@@ -1,4 +1,6 @@
-# Open Live Trivia - Frontend
+# [Open Live Trivia](https://openlivetrivia.com/) - Frontend - Minimax LLM Experiment
+
+# [https://openlivetrivia.com/]()
 
 React-based frontend for Open Live Trivia game.
 
