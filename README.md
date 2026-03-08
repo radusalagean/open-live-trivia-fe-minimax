@@ -8,7 +8,7 @@ React-based frontend for Open Live Trivia game.
 
 - Docker
 - Docker Compose
-- Create `$HOME/.open-live-trivia_vault/fe/.env` with environment variables (see `env/fe.env` for required variables)
+- Create `$HOME/.open-live-trivia_vault/fe.env` with environment variables (see `env/fe.env` for required variables)
 
 ## Running (Docker)
 
@@ -27,7 +27,7 @@ The app will be available at `http://localhost:5173`
 
 2. **Set up environment variables**:
    ```bash
-   export ENV_FILE=$HOME/.open-live-trivia_vault/fe/.env
+   export ENV_FILE=$HOME/.open-live-trivia_vault/fe.env
    ```
 
 3. **Run**:
