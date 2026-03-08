@@ -1,7 +1,5 @@
 # [Open Live Trivia](https://openlivetrivia.com/) - Frontend - Minimax LLM Experiment
 
-# [https://openlivetrivia.com/]()
-
 React-based frontend for Open Live Trivia game.
 
 **Disclaimer:** This web frontend is an experimental project created 100% by prompting the MiniMax M2.5 LLM, to test its capabilities. The backend code was artisanally crafted in 2019 and so was the [Android app](https://play.google.com/store/apps/details?id=com.busytrack.openlivetrivia). Use the Android app if you want a more reliable experience with this game.
