@@ -2,33 +2,19 @@
 
 React-based frontend for Open Live Trivia game.
 
-## Prerequisites
-
-- [mise](https://mise.jdx.dev) - Dev tool manager
+**Disclaimer:** This web frontend is an experimental project created 100% by prompting the MiniMax M2.5 LLM, to test its capabilities. The backend code was artisanally crafted in 2019 and so was the [Android app](https://play.google.com/store/apps/details?id=com.busytrack.openlivetrivia). Use the Android app if you want a more reliable experience with this game.
 
 ## Setup
 
-1. **Install mise** (if not already installed):
+1. **Install dependencies**:
    ```bash
-   curl https://mise.run | sh
+   npm install
    ```
 
-2. **Add mise to your shell** (`~/.bashrc` or `~/.zshrc`):
-   ```bash
-   echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   cd ~/Source/open-live-trivia-fe-minimax
-   mise install
-   ```
-
-4. **Set up environment variables**:
+2. **Set up environment variables**:
    ```bash
    export ENV_FILE=~/Desktop/olt-keys/.env
    ```
-   Or add to your shell profile for persistence.
 
 ## Running
 
