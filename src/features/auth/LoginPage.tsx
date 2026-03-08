@@ -43,27 +43,32 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full shadow-xl">
-        <h1 className="text-3xl font-bold text-white text-center mb-8">
+    <div className="flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+        {/* Logo */}
+        <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+          <span className="text-white text-3xl font-bold">?</span>
+        </div>
+        
+        <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
           Open Live Trivia
         </h1>
         
         {isRegistering && (
           <div className="mb-6">
-            <label className="block text-gray-400 text-sm mb-2">Username</label>
+            <label className="block text-gray-600 text-sm mb-2">Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 input-field"
               placeholder="Choose a username"
             />
           </div>
         )}
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-error/10 border border-error text-error text-sm rounded-lg">
             {error}
           </div>
         )}
@@ -71,7 +76,7 @@ export const LoginPage = () => {
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+          className="w-full py-3 px-4 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
@@ -91,7 +96,7 @@ export const LoginPage = () => {
             setIsRegistering(!isRegistering);
             setError('');
           }}
-          className="w-full mt-4 text-gray-400 hover:text-white text-sm transition-colors"
+          className="w-full mt-4 text-primary hover:text-primary-dark text-sm transition-colors"
         >
           {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
         </button>

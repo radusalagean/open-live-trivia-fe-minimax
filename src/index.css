@@ -1,6 +1,158 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #2a77d9;
+  --color-primary-dark: #2a77d9;
+  --color-accent: #6ac3ce;
+  
+  --color-white: #FFFFFF;
+  --color-light-grey: #FAFAFA;
+  --color-medium-grey: #F5F5F5;
+  --color-dark-grey: #E0E0E0;
+  --color-super-dark-grey: #BBBBBB;
+  --color-super-ultra-dark-grey: #737373;
+  --color-black: #000000;
+  
+  --color-positive: #0BB637;
+  --color-negative: #FF0000;
+  --color-warn: #FF6F00;
+  --color-error: #FF0000;
+  
+  --color-category: #03A9F4;
+  --color-rights-indicator: #FFA000;
+  
+  --color-reveal-answer: #EB514E;
+  --color-correct-answer: #27C04E;
+  
+  --color-gold: #FFD700;
+  --color-silver: #BEC7C7;
+  --color-bronze: #CD7F32;
+  
+  --font-family-mono: "Cutive Mono", "Share Tech Mono", ui-monospace, monospace;
+  --font-family-sans: "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("https://fonts.gstatic.com/s/nunitosans/v14/pe0pMUNMET50lJtcq3NWR22y6qfXmC9l.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("https://fonts.gstatic.com/s/nunitosans/v14/pe0qMUNMET50lJtcq3NWR22y6qfXmA9l.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Share Tech Mono";
+  src: url("https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRCCnFt6678KcNkHS0.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Cutive Mono";
+  src: url("https://fonts.gstatic.com/s/cutivemono/v10/h0GsssGi8zD4Jdl2xJ4O3LcdYfM4.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  background-color: var(--color-light-grey);
+  font-family: var(--font-family-sans);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-negative {
+  background-color: var(--color-negative);
+  color: var(--color-white);
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: var(--color-super-ultra-dark-grey);
+  color: var(--color-white);
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.card {
+  background-color: var(--color-white);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-field {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-dark-grey);
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 16px;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--color-primary);
+}
+
+.text-mono {
+  font-family: var(--font-family-mono);
+}
+
+.text-category {
+  background-color: var(--color-category);
+  color: var(--color-white);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.answer-text {
+  font-family: var(--font-family-mono);
+  font-size: 18px;
+  background-color: var(--color-dark-grey);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
 }

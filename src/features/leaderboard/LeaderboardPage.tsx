@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { leaderboardApi } from '@/api/endpoints';
 import type { LeaderboardEntry } from '@/types';
 
+const RIGHTS_LABELS = ['', 'MOD', 'ADMIN'];
+
 export const LeaderboardPage = () => {
   const navigate = useNavigate();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -54,69 +56,88 @@ export const LeaderboardPage = () => {
     }
   }, [loading, page, totalPages]);
 
+  const getPlaceColor = (index: number) => {
+    if (index === 0) return 'bg-gold text-white';
+    if (index === 1) return 'bg-silver text-white';
+    if (index === 2) return 'bg-bronze text-white';
+    return 'bg-accent text-white';
+  };
+
+  const getRightsLabel = (rights: number) => {
+    return RIGHTS_LABELS[rights] || '';
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
-      <div className="bg-gray-800 p-4 shadow-md">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="text-gray-400 hover:text-white"
-          >
-            ← Back
-          </button>
-          <h1 className="text-xl font-bold text-white">Leaderboard</h1>
-          <button
-            onClick={handleRefresh}
-            className="text-gray-400 hover:text-white"
-            disabled={refreshing}
-          >
-            {refreshing ? '...' : '↻'}
-          </button>
-        </div>
+    <div className="flex flex-col">
+      {/* Header */}
+      <div className="bg-white px-4 py-3 shadow-md flex items-center">
+        <button
+          onClick={() => navigate('/')}
+          className="text-primary hover:text-primary-dark"
+        >
+          ← Back
+        </button>
+        <h1 className="flex-1 text-center text-gray-800 font-bold text-lg">Leaderboard</h1>
+        <button
+          onClick={handleRefresh}
+          className="text-primary hover:text-primary-dark"
+          disabled={refreshing}
+        >
+          {refreshing ? '...' : '↻'}
+        </button>
       </div>
 
+      {/* Leaderboard List */}
       <div 
         className="flex-1 overflow-auto p-4"
         onScroll={handleScroll}
       >
-        <div className="max-w-lg mx-auto space-y-2">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           {entries.map((entry, index) => (
             <div
               key={entry._id}
-              className={`flex items-center gap-4 bg-gray-800 rounded-lg p-4 ${
-                index === 0 ? 'border-2 border-yellow-400' :
-                index === 1 ? 'border-2 border-gray-300' :
-                index === 2 ? 'border-2 border-amber-600' : ''
-              }`}
+              className={`flex items-center p-3 ${index !== entries.length - 1 ? 'border-b border-light-grey' : ''}`}
             >
-              <div className={`w-8 text-center font-bold ${
-                index === 0 ? 'text-yellow-400' :
-                index === 1 ? 'text-gray-300' :
-                index === 2 ? 'text-amber-600' : 'text-gray-400'
-              }`}>
-                #{index + 1}
-              </div>
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+              {/* Place Badge */}
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${getPlaceColor(index)}`}>
+                {index + 1}
+              </span>
+              
+              {/* Avatar */}
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold ml-3">
                 {entry.username.charAt(0).toUpperCase()}
               </div>
-              <div className="flex-1">
-                <p className="text-white font-medium">{entry.username}</p>
+              
+              {/* Username & Rights */}
+              <div className="flex-1 ml-3 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-gray-800 font-bold truncate">{entry.username}</p>
+                  {entry.rights > 0 && (
+                    <span className="text-xs bg-rights-indicator text-white px-1 rounded flex-shrink-0">
+                      {getRightsLabel(entry.rights)}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-yellow-400 font-bold">{entry.coins.toLocaleString()}</p>
-                <p className="text-gray-500 text-xs">coins</p>
+              
+              {/* Coins */}
+              <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                <span className="text-gray-800 font-mono font-bold">{entry.coins.toLocaleString()}</span>
+                <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
+                </div>
               </div>
             </div>
           ))}
 
           {loading && (
             <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
           )}
 
           {!loading && entries.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-super-ultra-dark-grey">
               No entries yet
             </div>
           )}
