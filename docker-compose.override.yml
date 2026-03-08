@@ -16,7 +16,3 @@ services:
 networks:
   open-live-trivia_network:
     driver: bridge
-
-volumes:
-  open-live-trivia-public-assets:
-    external: true
