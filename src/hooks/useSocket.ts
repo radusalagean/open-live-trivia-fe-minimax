@@ -149,11 +149,12 @@ export const useSocket = () => {
       currentValue: number;
     }) => {
       console.log('SPLIT:', data);
+      const currentTotalSplitSeconds = useGameStore.getState().totalSplitSeconds;
       setSplitting(true);
       setGameState('split');
       setAnswer(data.answer);
       setCurrentValue(data.currentValue);
-      setSplitTimes(0, 15);
+      setSplitTimes(0, currentTotalSplitSeconds || 15);
       
       const revealedChars = data.answer.replace(/_/g, '').split('');
       setRevealedChars(revealedChars);
@@ -174,10 +175,6 @@ export const useSocket = () => {
 
     const onInsufficientFunds = () => {
       console.log('INSUFFICIENT_FUNDS');
-    };
-
-    const onPeerReaction = (data: { userId: string; username: string; emoji: string }) => {
-      console.log('PEER_REACTION:', data);
     };
 
     const onPlayerList = (data: { 
@@ -219,7 +216,6 @@ export const useSocket = () => {
     socket.on('REVEAL', onReveal);
     socket.on('COIN_DIFF', onCoinDiff);
     socket.on('INSUFFICIENT_FUNDS', onInsufficientFunds);
-    socket.on('PEER_REACTION', onPeerReaction);
     socket.on('PLAYER_LIST', onPlayerList);
     socket.on('ENTRY_REPORTED_OK', onEntryReportedOk);
     socket.on('ENTRY_REPORTED_ERROR', onEntryReportedError);
@@ -241,7 +237,6 @@ export const useSocket = () => {
       socket.off('REVEAL', onReveal);
       socket.off('COIN_DIFF', onCoinDiff);
       socket.off('INSUFFICIENT_FUNDS', onInsufficientFunds);
-      socket.off('PEER_REACTION', onPeerReaction);
       socket.off('PLAYER_LIST', onPlayerList);
       socket.off('ENTRY_REPORTED_OK', onEntryReportedOk);
       socket.off('ENTRY_REPORTED_ERROR', onEntryReportedError);
@@ -250,10 +245,6 @@ export const useSocket = () => {
 
   const submitAttempt = useCallback((answer: string) => {
     socket.emit('ATTEMPT', { message: answer });
-  }, []);
-
-  const sendReaction = useCallback((emoji: string) => {
-    socket.emit('REACTION', { emoji });
   }, []);
 
   const reportEntry = useCallback(() => {
@@ -266,7 +257,6 @@ export const useSocket = () => {
 
   return {
     submitAttempt,
-    sendReaction,
     reportEntry,
     requestPlayerList,
   };

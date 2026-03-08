@@ -4,16 +4,13 @@ import { useSocket } from '@/hooks/useSocket';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
 
-const EMOJIS = ['👍', '👎', '😂', '😮', '😢', '🔥'];
-
 export const GamePage = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { submitAttempt, sendReaction, reportEntry, requestPlayerList } = useSocket();
+  const { submitAttempt, reportEntry, requestPlayerList } = useSocket();
   const [answer, setAnswer] = useState('');
   const [showPlayerDrawer, setShowPlayerDrawer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [showReactionPicker, setShowReactionPicker] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -23,7 +20,6 @@ export const GamePage = () => {
     currentValue,
     elapsedSplitSeconds,
     totalSplitSeconds,
-    freeAttemptsLeft,
     entryReported,
     playerCount,
     isSplitting,
@@ -58,18 +54,19 @@ export const GamePage = () => {
       return;
     }
     
+    const maxSeconds = totalSplitSeconds || 15;
     const interval = setInterval(() => {
       setLocalElapsed((prev) => {
-        if (prev >= 15) {
+        if (prev >= maxSeconds) {
           clearInterval(interval);
-          return 15;
+          return maxSeconds;
         }
         return prev + 1;
       });
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [isSplitting]);
+  }, [isSplitting, totalSplitSeconds]);
 
   const displayedElapsed = isSplitting ? localElapsed : elapsedSplitSeconds;
   const displayedTotal = totalSplitSeconds || 15;
@@ -147,15 +144,6 @@ export const GamePage = () => {
               {showMenu && (
                 <div className="absolute right-0 mt-1 w-48 bg-gray-700 rounded-lg shadow-xl z-10">
                   <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      setShowReactionPicker(true);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-600 text-gray-200"
-                  >
-                    Add Reaction
-                  </button>
-                  <button
                     onClick={handleReport}
                     disabled={entryReported}
                     className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-600 disabled:opacity-50 ${entryReported ? 'text-gray-500' : 'text-red-400'}`}
@@ -208,13 +196,6 @@ export const GamePage = () => {
             <div className="text-center mb-4">
               <span className="text-yellow-400 text-2xl font-bold">{currentValue}</span>
               <span className="text-gray-400 text-sm ml-1">coins</span>
-            </div>
-
-            {/* Free Attempts */}
-            <div className="text-center mb-4">
-              <span className="text-gray-400 text-sm">
-                {freeAttemptsLeft} free attempt{freeAttemptsLeft !== 1 ? 's' : ''} left
-              </span>
             </div>
 
             {/* Answer Input */}
@@ -330,32 +311,6 @@ export const GamePage = () => {
               >
                 Refresh
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Reaction Picker */}
-      {showReactionPicker && (
-        <div className="fixed inset-0 z-30 flex items-end justify-center pb-8">
-          <div 
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setShowReactionPicker(false)}
-          />
-          <div className="relative bg-gray-800 rounded-xl p-4 shadow-xl">
-            <div className="flex gap-2">
-              {EMOJIS.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => {
-                    sendReaction(emoji);
-                    setShowReactionPicker(false);
-                  }}
-                  className="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-full text-2xl transition-colors"
-                >
-                  {emoji}
-                </button>
-              ))}
             </div>
           </div>
         </div>
