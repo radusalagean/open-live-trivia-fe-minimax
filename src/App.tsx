@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { ToastContainer } from '@/components/Toast';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { MainMenu } from '@/features/mainmenu/MainMenu';
 import { GamePage } from '@/features/game/GamePage';
@@ -40,6 +41,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Layout>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

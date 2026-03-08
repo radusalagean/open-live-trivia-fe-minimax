@@ -89,9 +89,45 @@ export const GamePage = () => {
     setShowMenu(false);
   };
 
-  const displayedAnswer = isRevealed || isSplitting ? currentAnswer : currentAnswer.replace(/[A-Za-z]/g, '_');
+  const handleCopyAttempt = (message: string) => {
+    if (status === 'playing') {
+      setAnswer(message);
+    }
+  };
+
+  const getDisplayAnswer = () => {
+    if (isRevealed) return currentAnswer;
+    if (!currentAnswer) return '';
+    
+    if (isSplitting && totalSplitSeconds > 0) {
+      const revealRatio = Math.min(1, localElapsed / totalSplitSeconds);
+      const chars = currentAnswer.split('');
+      const lettersOnly = currentAnswer.replace(/[^a-zA-Z]/g, '');
+      const lettersToShow = Math.floor(lettersOnly.length * revealRatio);
+      
+      let letterIndex = 0;
+      return chars.map((char) => {
+        if (/[a-zA-Z]/.test(char)) {
+          const shouldShow = letterIndex < lettersToShow;
+          letterIndex++;
+          return shouldShow ? char : '_';
+        }
+        return char;
+      }).join('');
+    }
+    
+    return currentAnswer.replace(/[a-zA-Z]/g, '_');
+  };
+
+  const displayedAnswer = getDisplayAnswer();
   const myUserId = user?._id;
   const canSubmit = status === 'playing' && answer.trim();
+
+  const getRightsLabel = (rights?: number) => {
+    if (rights === 1) return 'MOD';
+    if (rights === 2) return 'ADMIN';
+    return null;
+  };
 
   useEffect(() => {
     attemptsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -215,11 +251,12 @@ export const GamePage = () => {
                   </div>
                 )}
                 <div 
+                  onClick={() => isMyAttempt && handleCopyAttempt(attempt.message)}
                   className={`max-w-[75%] px-4 py-2 rounded-xl ${
                     attempt.correct 
                       ? 'bg-accent text-black' 
                       : 'bg-dark-grey text-black'
-                  }`}
+                  } ${isMyAttempt && status === 'playing' ? 'cursor-pointer hover:opacity-80' : ''}`}
                 >
                   {!isMyAttempt && (
                     <p className="text-xs text-gray-500 mb-1 font-light italic">{attempt.username}</p>
@@ -301,6 +338,11 @@ export const GamePage = () => {
                         <span className="text-gray-800">{player.username}</span>
                         {player.isMe && (
                           <span className="text-xs bg-primary text-white px-1 rounded">You</span>
+                        )}
+                        {player.rights && player.rights > 0 && (
+                          <span className="text-xs bg-rights-indicator text-white px-1 rounded">
+                            {getRightsLabel(player.rights)}
+                          </span>
                         )}
                       </div>
                     </div>

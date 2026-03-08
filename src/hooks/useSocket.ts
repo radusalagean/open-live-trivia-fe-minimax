@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { socket, connectSocket, disconnectSocket, setAuthenticated } from '@/lib/socket';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
+import { toast } from '@/lib/toast';
 
 export const useSocket = () => {
   const token = useAuthStore((s) => s.token);
@@ -43,10 +44,14 @@ export const useSocket = () => {
 
     socket.on('disconnect', (reason) => {
       console.log('Socket disconnected:', reason);
+      if (reason === 'io server disconnect') {
+        toast.error('Disconnected from server');
+      }
     });
 
     socket.on('connect_error', (error) => {
       console.error('Socket connection error:', error);
+      toast.error('Failed to connect to game server');
     });
 
     socket.on('unauthorized', (data: { message: string }) => {
@@ -173,10 +178,6 @@ export const useSocket = () => {
       updateCoins(data.coinDiff);
     };
 
-    const onInsufficientFunds = () => {
-      console.log('INSUFFICIENT_FUNDS');
-    };
-
     const onPlayerList = (data: { 
       players: Array<{
         _id: string;
@@ -200,10 +201,17 @@ export const useSocket = () => {
     const onEntryReportedOk = () => {
       console.log('ENTRY_REPORTED_OK');
       setEntryReported(true);
+      toast.success('Entry reported successfully');
     };
 
     const onEntryReportedError = () => {
       console.log('ENTRY_REPORTED_ERROR');
+      toast.error('Failed to report entry');
+    };
+
+    const onInsufficientFunds = () => {
+      console.log('INSUFFICIENT_FUNDS');
+      toast.error('Insufficient funds to play');
     };
 
     socket.on('authenticated', onAuthenticated);
