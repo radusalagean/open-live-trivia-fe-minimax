@@ -1,0 +1,49 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git directory.
+/.git/
+/.gitignore
+
+# Ignore node_modules
+/node_modules/
+
+# Ignore development files
+/.devcontainer
+/.opencode
+
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
+/docker-compose*.yml
+
+# Ignore build output
+/dist/
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore macOS
+.DS_Store
+
+# Ignore secrets
+/secrets
+.env
+.env.local
+.env.*.local
+
+# Ignore logs and temp files
+/log/*
+/tmp/*
+*.log
+
+# Ignore CI service files
+/.github
+
+# Ignore test and docs
+/coverage/
+/docs/
+/README.md
+/PLAN.md

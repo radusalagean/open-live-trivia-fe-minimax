@@ -1,0 +1,26 @@
+services:
+  open-live-trivia-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+      - $HOME/.open-live-trivia_vault/fe/.env:/app/.env:ro
+    environment:
+      - ENV_FILE=/app/.env
+    env_file:
+      - env/fe.env
+    tty: true
+    stdin_open: true
+
+networks:
+  open-live-trivia_network:
+    driver: bridge
+
+volumes:
+  open-live-trivia-public-assets:
+    external: true

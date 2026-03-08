@@ -1,0 +1,19 @@
+name: open-live-trivia-fe
+
+services:
+  open-live-trivia-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: open-live-trivia-fe
+    restart: unless-stopped
+    networks:
+      - ${NETWORK_NAME:-open-live-trivia_network}
+    volumes:
+      - open-live-trivia-public-assets:/usr/share/nginx/html/public:ro
+    env_file:
+      - env/fe.env
+
+volumes:
+  open-live-trivia-public-assets:
+    name: open-live-trivia-public-assets

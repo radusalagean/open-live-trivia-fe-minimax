@@ -4,7 +4,21 @@ React-based frontend for Open Live Trivia game.
 
 **Disclaimer:** This web frontend is an experimental project created 100% by prompting the MiniMax M2.5 LLM, to test its capabilities. The backend code was artisanally crafted in 2019 and so was the [Android app](https://play.google.com/store/apps/details?id=com.busytrack.openlivetrivia). Use the Android app if you want a more reliable experience with this game.
 
-## Setup
+## Prerequisites
+
+- Docker
+- Docker Compose
+- Create `$HOME/.open-live-trivia_vault/fe/.env` with environment variables (see `env/fe.env` for required variables)
+
+## Running (Docker)
+
+```bash
+docker compose up -d
+```
+
+The app will be available at `http://localhost:5173`
+
+## Running (Native)
 
 1. **Install dependencies**:
    ```bash
@@ -13,16 +27,13 @@ React-based frontend for Open Live Trivia game.
 
 2. **Set up environment variables**:
    ```bash
-   export ENV_FILE=~/Desktop/olt-keys/.env
+   export ENV_FILE=$HOME/.open-live-trivia_vault/fe/.env
    ```
 
-## Running
-
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:5173`
+3. **Run**:
+   ```bash
+   npm run dev
+   ```
 
 ## Building
 
