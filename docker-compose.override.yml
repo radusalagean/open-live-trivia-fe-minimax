@@ -9,7 +9,8 @@ services:
       - .:/app
       - /app/node_modules
       - /app/dist
-      - $HOME/.open-live-trivia_vault/fe.env:/app/fe.env:ro
+      - $HOME/.open-live-trivia_vault/fe.env:/app/env/fe.env:ro
+      - $HOME/.open-live-trivia_vault/fe-secrets.env:/app/env/fe-secrets.env:ro
     tty: true
     stdin_open: true
 

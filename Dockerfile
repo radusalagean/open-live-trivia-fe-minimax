@@ -6,13 +6,10 @@ COPY package.json package-lock.json ./
 
 RUN npm install
 
-COPY env/fe.env fe.env
-COPY env/fe-secrets.env fe-secrets.env
-
 COPY . .
 
-ENV ENV_FILE=/app/fe.env
-ENV SECRETS_ENV_FILE=/app/fe-secrets.env
+ENV ENV_FILE=/app/env/fe.env
+ENV SECRETS_ENV_FILE=/app/env/fe-secrets.env
 RUN npm run build
 
 FROM nginx:stable-alpine
