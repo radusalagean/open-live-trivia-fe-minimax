@@ -10,10 +10,6 @@ services:
       - /app/node_modules
       - /app/dist
       - $HOME/.open-live-trivia_vault/fe.env:/app/fe.env:ro
-    environment:
-      - ENV_FILE=/app/fe.env
-    env_file:
-      - env/fe.env
     tty: true
     stdin_open: true
 

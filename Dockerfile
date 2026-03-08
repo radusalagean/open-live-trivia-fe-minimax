@@ -6,11 +6,11 @@ COPY package.json package-lock.json ./
 
 RUN npm install
 
-COPY env/fe.env .env
+COPY env/fe.env fe.env
 
 COPY . .
 
-ENV ENV_FILE=/app/.env
+ENV ENV_FILE=/app/fe.env
 RUN npm run build
 
 FROM nginx:stable-alpine

@@ -11,8 +11,6 @@ services:
       - ${NETWORK_NAME:-open-live-trivia_network}
     volumes:
       - open-live-trivia-public-assets:/usr/share/nginx/html/public:ro
-    env_file:
-      - env/fe.env
 
 volumes:
   open-live-trivia-public-assets:
