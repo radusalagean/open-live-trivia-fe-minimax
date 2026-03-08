@@ -8,7 +8,9 @@ React-based frontend for Open Live Trivia game.
 
 - Docker
 - Docker Compose
-- Create `$HOME/.open-live-trivia_vault/fe.env` with environment variables (see `env/fe.env` for required variables)
+- Create `$HOME/.open-live-trivia_vault/` with two environment files:
+  - `fe.env` - Contains `VITE_API_URL` (see `env/fe.env`)
+  - `fe-secrets.env` - Contains Firebase credentials (see `env/fe-secrets.env`)
 
 ## Running (Docker)
 
@@ -28,6 +30,7 @@ The app will be available at `http://localhost:5173`
 2. **Set up environment variables**:
    ```bash
    export ENV_FILE=$HOME/.open-live-trivia_vault/fe.env
+   export SECRETS_ENV_FILE=$HOME/.open-live-trivia_vault/fe-secrets.env
    ```
 
 3. **Run**:
