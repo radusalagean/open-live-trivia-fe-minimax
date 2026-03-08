@@ -1,13 +1,45 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-import { authApi } from '@/api/endpoints';
+import { useSettingsStore } from '@/stores/settingsStore';
+import { authApi, systemApi } from '@/api/endpoints';
+
+interface ToggleProps {
+  enabled: boolean;
+  onChange: (enabled: boolean) => void;
+}
+
+const Toggle = ({ enabled, onChange }: ToggleProps) => (
+  <button
+    onClick={() => onChange(!enabled)}
+    className={`w-12 h-6 rounded-full relative transition-colors ${
+      enabled ? 'bg-primary' : 'bg-super-dark-grey'
+    }`}
+  >
+    <div
+      className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
+        enabled ? 'translate-x-6' : 'translate-x-0.5'
+      }`}
+    />
+  </button>
+);
 
 export const SettingsPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const { 
+    soundEffects, 
+    notifications, 
+    relativeTime, 
+    showRules,
+    setSoundEffects,
+    setNotifications,
+    setRelativeTime,
+    setShowRules
+  } = useSettingsStore();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -25,6 +57,17 @@ export const SettingsPage = () => {
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleDisconnectAll = async () => {
+    setDisconnecting(true);
+    try {
+      await systemApi.disconnectEveryone();
+    } catch (error) {
+      console.error('Failed to disconnect everyone:', error);
+    } finally {
+      setDisconnecting(false);
     }
   };
 
@@ -72,15 +115,19 @@ export const SettingsPage = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2">
                 <span className="text-gray-600">Sound Effects</span>
-                <button className="w-12 h-6 bg-super-dark-grey rounded-full relative">
-                  <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-                </button>
+                <Toggle enabled={soundEffects} onChange={setSoundEffects} />
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-gray-600">Notifications</span>
-                <button className="w-12 h-6 bg-primary rounded-full relative">
-                  <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                </button>
+                <Toggle enabled={notifications} onChange={setNotifications} />
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-600">Relative Time</span>
+                <Toggle enabled={relativeTime} onChange={setRelativeTime} />
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-gray-600">Show Rules on Game Join</span>
+                <Toggle enabled={showRules} onChange={setShowRules} />
               </div>
             </div>
           </div>
@@ -101,6 +148,20 @@ export const SettingsPage = () => {
               Delete Account
             </button>
           </div>
+
+          {/* Admin Section */}
+          {user?.rights === 2 && (
+            <div className="p-4 border-t border-light-grey">
+              <h2 className="text-gray-800 font-bold mb-3 text-negative">Danger Zone</h2>
+              <button
+                onClick={handleDisconnectAll}
+                disabled={disconnecting}
+                className="w-full py-3 bg-negative text-white font-bold rounded-lg disabled:opacity-50"
+              >
+                {disconnecting ? 'Disconnecting...' : 'Disconnect All Players'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

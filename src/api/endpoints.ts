@@ -44,6 +44,10 @@ export const systemApi = {
     const response = await api.get('/system/info');
     return response.data as SystemInfo;
   },
+  disconnectEveryone: async () => {
+    const response = await api.post('/system/disconnect_everyone');
+    return response.data;
+  },
 };
 
 export const reportApi = {

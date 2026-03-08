@@ -7,6 +7,7 @@ import { MainMenu } from '@/features/mainmenu/MainMenu';
 import { GamePage } from '@/features/game/GamePage';
 import { LeaderboardPage } from '@/features/leaderboard/LeaderboardPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
+import { ModerationPage } from '@/features/moderation/ModerationPage';
 
 interface LayoutProps {
   children: ReactNode;
@@ -71,6 +72,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/moderate"
+            element={
+              <ProtectedRoute>
+                <ModerationPage />
               </ProtectedRoute>
             }
           />

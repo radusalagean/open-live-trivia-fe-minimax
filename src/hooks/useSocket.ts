@@ -154,7 +154,7 @@ export const useSocket = () => {
       setGameState('split');
       setAnswer(data.answer);
       setCurrentValue(data.currentValue);
-      setSplitTimes(0, currentTotalSplitSeconds || 15);
+      setSplitTimes(0, currentTotalSplitSeconds);
       
       const revealedChars = data.answer.replace(/_/g, '').split('');
       setRevealedChars(revealedChars);

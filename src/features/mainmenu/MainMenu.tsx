@@ -40,7 +40,7 @@ export const MainMenu = () => {
           )}
           
           <a
-            href="https://github.com/anomalyco/open-live-trivia"
+            href="https://github.com/radusalagean/open-live-trivia-api"
             target="_blank"
             rel="noopener noreferrer"
             className="p-1"

@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useAuthStore } from '@/stores/authStore';
+import { systemApi } from '@/api/endpoints';
+
+const FRONTEND_VERSION = '1.0.0';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -11,6 +14,24 @@ export const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [versionWarning, setVersionWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkServerVersion = async () => {
+      try {
+        const info = await systemApi.getInfo();
+        if (info.minAppVersionCode > parseInt(FRONTEND_VERSION.replace(/\./g, ''), 10)) {
+          setError('Your app version is outdated. Please update to continue.');
+          setLoading(true);
+        } else if (info.latestAppVersionCode > parseInt(FRONTEND_VERSION.replace(/\./g, ''), 10)) {
+          setVersionWarning('A newer version is available. Consider updating for the best experience.');
+        }
+      } catch (err) {
+        console.error('Failed to check server version:', err);
+      }
+    };
+    checkServerVersion();
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -70,6 +91,12 @@ export const LoginPage = () => {
         {error && (
           <div className="mb-4 p-3 bg-error/10 border border-error text-error text-sm rounded-lg">
             {error}
+          </div>
+        )}
+
+        {versionWarning && !error && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-400 text-yellow-700 text-sm rounded-lg">
+            {versionWarning}
           </div>
         )}
 
