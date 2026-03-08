@@ -31,10 +31,20 @@ export interface LeaderboardResponse {
   items: LeaderboardEntry[];
 }
 
+export type GameStateType = 'waiting' | 'split' | 'transition';
+
 export interface GameState {
-  currentRound: number;
-  totalRounds: number;
-  currentEntry: string;
+  category: string;
+  clue: string;
+  answer: string;
+  currentValue: number;
+  elapsedSplitSeconds: number;
+  totalSplitSeconds: number;
+  freeAttemptsLeft: number;
+  entryReported: boolean;
+  playerCount: number;
+  gameState: GameStateType;
+  attempts: Attempt[];
   revealedChars: string[];
   isSplitting: boolean;
   isRevealed: boolean;
@@ -50,14 +60,17 @@ export interface Player {
   username: string;
   avatar?: string;
   isMe: boolean;
+  rights?: number;
+  coins?: number;
+  joined?: string;
 }
 
 export interface Attempt {
-  playerId: string;
+  userId: string;
   username: string;
-  answer: string;
-  isCorrect: boolean;
-  timestamp: number;
+  message: string;
+  correct: boolean;
+  correctAnswer?: string;
 }
 
 export interface SystemInfo {

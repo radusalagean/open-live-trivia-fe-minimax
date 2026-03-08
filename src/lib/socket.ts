@@ -7,16 +7,27 @@ export const socket: Socket = io(SOCKET_URL, {
   transports: ['websocket', 'polling'],
   path: '/api/socket.io',
   withCredentials: true,
-  auth: (cb) => {
-    const token = localStorage.getItem('token');
-    cb({ idToken: token });
-  },
 });
 
-export const connectSocket = () => {
-  socket.connect();
+let authenticated = false;
+
+export const connectSocket = (idToken: string) => {
+  if (!socket.connected) {
+    socket.connect();
+  }
+  
+  if (!authenticated) {
+    socket.emit('authentication', { idToken });
+  }
 };
 
 export const disconnectSocket = () => {
+  authenticated = false;
   socket.disconnect();
+};
+
+export const isAuthenticated = () => authenticated;
+
+export const setAuthenticated = (value: boolean) => {
+  authenticated = value;
 };

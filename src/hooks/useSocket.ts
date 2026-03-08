@@ -1,17 +1,25 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { socket, connectSocket, disconnectSocket } from '@/lib/socket';
+import { socket, connectSocket, disconnectSocket, setAuthenticated } from '@/lib/socket';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
 
 export const useSocket = () => {
   const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
   const isConnected = useRef(false);
 
   const {
-    setRound,
-    setEntry,
-    addRevealedChar,
-    resetRevealed,
+    setCategory,
+    setClue,
+    setAnswer,
+    setCurrentValue,
+    setSplitTimes,
+    setFreeAttemptsLeft,
+    setEntryReported,
+    setPlayerCount,
+    setGameState,
+    setAttempts,
+    setRevealedChars,
     setSplitting,
     setRevealed,
     addPlayer,
@@ -19,14 +27,14 @@ export const useSocket = () => {
     addPeerAttempt,
     clearPeerAttempts,
     updateCoins,
-    setStatus,
     setCoins,
+    setStatus,
   } = useGameStore();
 
   useEffect(() => {
     if (!token || isConnected.current) return;
 
-    connectSocket();
+    connectSocket(token);
     isConnected.current = true;
 
     socket.on('connect', () => {
@@ -43,66 +51,162 @@ export const useSocket = () => {
 
     socket.on('unauthorized', (data: { message: string }) => {
       console.error('Socket unauthorized:', data.message);
+      setAuthenticated(false);
     });
 
-    const onAuthenticated = (data: { coins: number }) => {
-      console.log('Authenticated, coins:', data.coins);
-      setCoins(data.coins);
+    const onAuthenticated = () => {
+      console.log('Authenticated');
+      setAuthenticated(true);
     };
 
     const onWelcome = (data: { 
-      round: number; 
-      totalRounds: number; 
-      entry: string;
-      revealedChars: string[];
+      gameState: number;
+      userCoins: number;
+      category: string;
+      clue: string;
+      answer: string;
+      currentValue: number;
+      elapsedSplitSeconds: number;
+      totalSplitSeconds: number;
+      freeAttemptsLeft: number;
+      entryReported: boolean;
+      players: number;
+      attempts: Array<{
+        userId: string;
+        username: string;
+        message: string;
+        correct: boolean;
+      }>;
     }) => {
-      setRound(data.round, data.totalRounds);
-      setEntry(data.entry);
+      console.log('WELCOME:', data);
+      setCoins(data.userCoins);
+      setCategory(data.category);
+      setClue(data.clue);
+      setAnswer(data.answer);
+      setCurrentValue(data.currentValue);
+      setSplitTimes(data.elapsedSplitSeconds, data.totalSplitSeconds);
+      setFreeAttemptsLeft(data.freeAttemptsLeft);
+      setEntryReported(data.entryReported);
+      setPlayerCount(data.players);
+      setGameState(data.gameState === 1 ? 'split' : data.gameState === 2 ? 'transition' : 'waiting');
+      setAttempts(data.attempts || []);
+      
+      const revealedChars = data.answer.replace(/_/g, '').split('');
+      setRevealedChars(revealedChars);
+      
       setStatus('playing');
-      if (data.revealedChars) {
-        data.revealedChars.forEach((char: string) => addRevealedChar(char));
+      setSplitting(data.gameState === 1);
+      setRevealed(data.gameState === 2);
+    };
+
+    const onPeerJoin = (player: { userId: string; username: string }) => {
+      console.log('PEER_JOIN:', player);
+      if (user && player.userId !== user._id) {
+        addPlayer({ id: player.userId, username: player.username, isMe: false });
       }
+      useGameStore.getState().setPlayerCount(useGameStore.getState().playerCount + 1);
     };
 
-    const onPeerJoin = (player: { id: string; username: string; avatar?: string }) => {
-      addPlayer({ ...player, isMe: false });
-    };
-
-    const onPeerLeft = (data: { id: string }) => {
-      removePlayer(data.id);
+    const onPeerLeft = (data: { userId: string }) => {
+      console.log('PEER_LEFT:', data);
+      removePlayer(data.userId);
+      useGameStore.getState().setPlayerCount(Math.max(0, useGameStore.getState().playerCount - 1));
     };
 
     const onPeerAttempt = (attempt: { 
-      playerId: string; 
+      userId: string; 
       username: string; 
-      answer: string;
-      isCorrect: boolean;
-      timestamp: number;
+      message: string;
+      correct: boolean;
     }) => {
+      console.log('PEER_ATTEMPT:', attempt);
       addPeerAttempt(attempt);
+      useGameStore.getState().addAttempt(attempt);
     };
 
-    const onRound = (data: { round: number; totalRounds: number; entry: string }) => {
+    const onRound = (data: { 
+      entryId: number;
+      category: string;
+      clue: string;
+      answer: string;
+      currentValue: number;
+    }) => {
+      console.log('ROUND:', data);
       clearPeerAttempts();
-      resetRevealed();
-      setRound(data.round, data.totalRounds);
-      setEntry(data.entry);
+      setRevealedChars([]);
+      setCategory(data.category);
+      setClue(data.clue);
+      setAnswer(data.answer);
+      setCurrentValue(data.currentValue);
+      setGameState('waiting');
+      setSplitting(false);
+      setRevealed(false);
       setStatus('playing');
     };
 
-    const onSplit = (data: { char: string }) => {
+    const onSplit = (data: { 
+      answer: string;
+      currentValue: number;
+    }) => {
+      console.log('SPLIT:', data);
       setSplitting(true);
-      addRevealedChar(data.char);
+      setGameState('split');
+      setAnswer(data.answer);
+      setCurrentValue(data.currentValue);
+      setSplitTimes(0, 15);
+      
+      const revealedChars = data.answer.replace(/_/g, '').split('');
+      setRevealedChars(revealedChars);
     };
 
-    const onReveal = () => {
+    const onReveal = (data: { answer: string }) => {
+      console.log('REVEAL:', data);
       setSplitting(false);
       setRevealed(true);
+      setGameState('transition');
+      setAnswer(data.answer);
       setStatus('revealed');
     };
 
-    const onCoinDiff = (data: { diff: number }) => {
-      updateCoins(data.diff);
+    const onCoinDiff = (data: { coinDiff: number }) => {
+      updateCoins(data.coinDiff);
+    };
+
+    const onInsufficientFunds = () => {
+      console.log('INSUFFICIENT_FUNDS');
+    };
+
+    const onPeerReaction = (data: { userId: string; username: string; emoji: string }) => {
+      console.log('PEER_REACTION:', data);
+    };
+
+    const onPlayerList = (data: { 
+      players: Array<{
+        _id: string;
+        username: string;
+        rights: number;
+        coins: number;
+        joined: string;
+      }>;
+    }) => {
+      const playerList = data.players.map((p) => ({
+        id: p._id,
+        username: p.username,
+        rights: p.rights,
+        coins: p.coins,
+        joined: p.joined,
+        isMe: user ? p._id === user._id : false,
+      }));
+      useGameStore.getState().setPlayers(playerList);
+    };
+
+    const onEntryReportedOk = () => {
+      console.log('ENTRY_REPORTED_OK');
+      setEntryReported(true);
+    };
+
+    const onEntryReportedError = () => {
+      console.log('ENTRY_REPORTED_ERROR');
     };
 
     socket.on('authenticated', onAuthenticated);
@@ -114,6 +218,11 @@ export const useSocket = () => {
     socket.on('SPLIT', onSplit);
     socket.on('REVEAL', onReveal);
     socket.on('COIN_DIFF', onCoinDiff);
+    socket.on('INSUFFICIENT_FUNDS', onInsufficientFunds);
+    socket.on('PEER_REACTION', onPeerReaction);
+    socket.on('PLAYER_LIST', onPlayerList);
+    socket.on('ENTRY_REPORTED_OK', onEntryReportedOk);
+    socket.on('ENTRY_REPORTED_ERROR', onEntryReportedError);
 
     return () => {
       isConnected.current = false;
@@ -131,19 +240,24 @@ export const useSocket = () => {
       socket.off('SPLIT', onSplit);
       socket.off('REVEAL', onReveal);
       socket.off('COIN_DIFF', onCoinDiff);
+      socket.off('INSUFFICIENT_FUNDS', onInsufficientFunds);
+      socket.off('PEER_REACTION', onPeerReaction);
+      socket.off('PLAYER_LIST', onPlayerList);
+      socket.off('ENTRY_REPORTED_OK', onEntryReportedOk);
+      socket.off('ENTRY_REPORTED_ERROR', onEntryReportedError);
     };
-  }, [token]);
+  }, [token, user]);
 
   const submitAttempt = useCallback((answer: string) => {
-    socket.emit('ATTEMPT', { answer });
+    socket.emit('ATTEMPT', { message: answer });
   }, []);
 
   const sendReaction = useCallback((emoji: string) => {
     socket.emit('REACTION', { emoji });
   }, []);
 
-  const reportEntry = useCallback((reason: string) => {
-    socket.emit('REPORT_ENTRY', { reason });
+  const reportEntry = useCallback(() => {
+    socket.emit('REPORT_ENTRY');
   }, []);
 
   const requestPlayerList = useCallback(() => {

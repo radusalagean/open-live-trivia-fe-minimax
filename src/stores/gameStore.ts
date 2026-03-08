@@ -1,11 +1,19 @@
 import { create } from 'zustand';
-import type { GameState, Player, Attempt } from '@/types';
+import type { GameState, Player, Attempt, GameStateType } from '@/types';
 
 interface GameStore extends GameState {
-  setRound: (round: number, total: number) => void;
-  setEntry: (entry: string) => void;
-  addRevealedChar: (char: string) => void;
-  resetRevealed: () => void;
+  setCategory: (category: string) => void;
+  setClue: (clue: string) => void;
+  setAnswer: (answer: string) => void;
+  setCurrentValue: (value: number) => void;
+  setSplitTimes: (elapsed: number, total: number) => void;
+  setFreeAttemptsLeft: (count: number) => void;
+  setEntryReported: (reported: boolean) => void;
+  setPlayerCount: (count: number) => void;
+  setGameState: (state: GameStateType) => void;
+  setAttempts: (attempts: Attempt[]) => void;
+  addAttempt: (attempt: Attempt) => void;
+  setRevealedChars: (chars: string[]) => void;
   setSplitting: (isSplitting: boolean) => void;
   setRevealed: (isRevealed: boolean) => void;
   setPlayers: (players: Player[]) => void;
@@ -21,9 +29,17 @@ interface GameStore extends GameState {
 }
 
 const initialState: GameState = {
-  currentRound: 0,
-  totalRounds: 0,
-  currentEntry: '',
+  category: '',
+  clue: '',
+  answer: '',
+  currentValue: 0,
+  elapsedSplitSeconds: 0,
+  totalSplitSeconds: 0,
+  freeAttemptsLeft: 3,
+  entryReported: false,
+  playerCount: 0,
+  gameState: 'waiting',
+  attempts: [],
   revealedChars: [],
   isSplitting: false,
   isRevealed: false,
@@ -37,15 +53,34 @@ const initialState: GameState = {
 export const useGameStore = create<GameStore>((set) => ({
   ...initialState,
 
-  setRound: (round, total) => set({ currentRound: round, totalRounds: total }),
+  setCategory: (category) => set({ category }),
   
-  setEntry: (entry) => set({ currentEntry: entry }),
+  setClue: (clue) => set({ clue }),
   
-  addRevealedChar: (char) => set((state) => ({ 
-    revealedChars: [...state.revealedChars, char] 
+  setAnswer: (answer) => set({ answer }),
+  
+  setCurrentValue: (currentValue) => set({ currentValue }),
+  
+  setSplitTimes: (elapsed, total) => set({ 
+    elapsedSplitSeconds: elapsed, 
+    totalSplitSeconds: total 
+  }),
+  
+  setFreeAttemptsLeft: (freeAttemptsLeft) => set({ freeAttemptsLeft }),
+  
+  setEntryReported: (entryReported) => set({ entryReported }),
+  
+  setPlayerCount: (playerCount) => set({ playerCount }),
+  
+  setGameState: (gameState) => set({ gameState }),
+  
+  setAttempts: (attempts) => set({ attempts }),
+  
+  addAttempt: (attempt) => set((state) => ({ 
+    attempts: [...state.attempts, attempt] 
   })),
   
-  resetRevealed: () => set({ revealedChars: [], isRevealed: false, isSplitting: false }),
+  setRevealedChars: (chars) => set({ revealedChars: chars }),
   
   setSplitting: (isSplitting) => set({ isSplitting }),
   
@@ -67,7 +102,7 @@ export const useGameStore = create<GameStore>((set) => ({
     peerAttempts: [...state.peerAttempts, attempt] 
   })),
   
-  clearPeerAttempts: () => set({ peerAttempts: [] }),
+  clearPeerAttempts: () => set({ peerAttempts: [], attempts: [] }),
   
   setCoins: (coins) => set({ coins }),
   
