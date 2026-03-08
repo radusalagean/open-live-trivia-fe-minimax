@@ -26,6 +26,8 @@ interface GameStore extends GameState {
   updateCoins: (delta: number) => void;
   setStatus: (status: GameState['status']) => void;
   setRoundWon: (won: boolean) => void;
+  setRevealedAnswer: (answer: string | undefined) => void;
+  setEntryId: (id: number) => void;
   resetTimer: () => void;
   reset: () => void;
 }
@@ -52,6 +54,7 @@ const initialState: GameState = {
   status: 'waiting',
   timerResetCount: 0,
   roundWon: false,
+  entryId: undefined,
 };
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -115,6 +118,10 @@ export const useGameStore = create<GameStore>((set) => ({
   setStatus: (status) => set({ status }),
   
   setRoundWon: (won) => set({ roundWon: won }),
+  
+  setRevealedAnswer: (answer) => set({ revealedAnswer: answer }),
+  
+  setEntryId: (id) => set({ entryId: id }),
   
   resetTimer: () => set((state) => ({ timerResetCount: state.timerResetCount + 1 })),
   

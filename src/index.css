@@ -157,6 +157,10 @@ body {
   letter-spacing: 0.1em;
 }
 
+.bg-correct-answer {
+  background-color: var(--color-correct-answer);
+}
+
 @keyframes slide-down {
   from {
     opacity: 0;

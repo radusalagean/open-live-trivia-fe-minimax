@@ -9,7 +9,7 @@ export const useSocket = () => {
   const user = useAuthStore((s) => s.user);
   const isConnected = useRef(false);
 
-  const {
+    const {
     setCategory,
     setClue,
     setAnswer,
@@ -31,6 +31,8 @@ export const useSocket = () => {
     setCoins,
     setStatus,
     setRoundWon,
+    setRevealedAnswer,
+    setEntryId,
     resetTimer,
   } = useGameStore();
 
@@ -69,6 +71,7 @@ export const useSocket = () => {
     const onWelcome = (data: { 
       gameState: number;
       userCoins: number;
+      entryId: number;
       category: string;
       clue: string;
       answer: string;
@@ -83,10 +86,12 @@ export const useSocket = () => {
         username: string;
         message: string;
         correct: boolean;
+        correctAnswer?: string;
       }>;
     }) => {
       console.log('WELCOME:', data);
       setCoins(data.userCoins);
+      setEntryId(data.entryId);
       setCategory(data.category);
       setClue(data.clue);
       setAnswer(data.answer);
@@ -95,7 +100,8 @@ export const useSocket = () => {
       setFreeAttemptsLeft(data.freeAttemptsLeft);
       setEntryReported(data.entryReported);
       setPlayerCount(data.players);
-      setGameState(data.gameState === 1 ? 'split' : data.gameState === 2 ? 'transition' : 'waiting');
+      const gameState = data.gameState === 1 ? 'split' : data.gameState === 2 ? 'transition' : 'waiting';
+      setGameState(gameState);
       setAttempts(data.attempts || []);
       
       const revealedChars = data.answer.replace(/_/g, '').split('');
@@ -104,6 +110,19 @@ export const useSocket = () => {
       setStatus('playing');
       setSplitting(data.gameState === 1);
       setRevealed(data.gameState === 2);
+
+      const lastAttempt = data.attempts && data.attempts.length > 0 
+        ? data.attempts[data.attempts.length - 1] 
+        : null;
+      
+      if (lastAttempt && lastAttempt.correct) {
+        setRoundWon(true);
+        setRevealedAnswer(lastAttempt.correctAnswer || data.answer);
+        setAnswer(lastAttempt.correctAnswer || data.answer);
+      } else if (data.gameState === 2) {
+        setRevealedAnswer(data.answer);
+        setAnswer(data.answer);
+      }
     };
 
     const onPeerJoin = (player: { userId: string; username: string }) => {
@@ -132,6 +151,9 @@ export const useSocket = () => {
       useGameStore.getState().addAttempt(attempt);
       if (attempt.correct) {
         setRoundWon(true);
+        setSplitting(false);
+        setRevealedAnswer(attempt.correctAnswer);
+        setAnswer(attempt.correctAnswer || '');
       }
     };
 
@@ -149,12 +171,14 @@ export const useSocket = () => {
       setClue(data.clue);
       setAnswer(data.answer);
       setCurrentValue(data.currentValue);
-      setGameState('waiting');
-      setSplitting(false);
+      setGameState('split');
+      setSplitting(true);
       setRevealed(false);
       setStatus('playing');
       setEntryReported(false);
       setRoundWon(false);
+      setRevealedAnswer(undefined);
+      setSplitTimes(0, useGameStore.getState().totalSplitSeconds || 15);
       resetTimer();
     };
 

@@ -18,6 +18,7 @@ export const GamePage = () => {
     answer: currentAnswer,
     currentValue,
     totalSplitSeconds,
+    elapsedSplitSeconds,
     entryReported,
     playerCount,
     isSplitting,
@@ -29,6 +30,7 @@ export const GamePage = () => {
     gameState,
     timerResetCount,
     roundWon,
+    revealedAnswer,
   } = useGameStore();
 
   const [localElapsed, setLocalElapsed] = useState(0);
@@ -39,8 +41,10 @@ export const GamePage = () => {
     if (timerResetCount !== prevTimerResetCount.current) {
       prevTimerResetCount.current = timerResetCount;
       setLocalElapsed(0);
+    } else if (elapsedSplitSeconds > 0 && localElapsed === 0 && isSplitting) {
+      setLocalElapsed(elapsedSplitSeconds);
     }
-  }, [timerResetCount]);
+  }, [timerResetCount, elapsedSplitSeconds, isSplitting, localElapsed]);
   
   useEffect(() => {
     if (intervalRef.current) {
@@ -53,7 +57,8 @@ export const GamePage = () => {
     }
     
     const maxSeconds = totalSplitSeconds || 15;
-    setLocalElapsed(0);
+    const startFrom = elapsedSplitSeconds > 0 ? elapsedSplitSeconds : 0;
+    setLocalElapsed(startFrom);
     
     intervalRef.current = window.setInterval(() => {
       setLocalElapsed((prev) => {
@@ -74,7 +79,7 @@ export const GamePage = () => {
         intervalRef.current = null;
       }
     };
-  }, [isSplitting, totalSplitSeconds, gameState, isRevealed]);
+  }, [isSplitting, totalSplitSeconds, gameState, isRevealed, elapsedSplitSeconds]);
 
   const progressPercent = totalSplitSeconds > 0 
     ? ((totalSplitSeconds - localElapsed) / totalSplitSeconds) * 100 
@@ -196,13 +201,17 @@ export const GamePage = () => {
 
             {/* Answer */}
             <div className="text-center mb-3">
-              <div className="answer-text inline-block px-2 py-0.5">
-                {currentAnswer}
+              <div 
+                className={`answer-text inline-block px-2 py-0.5 ${
+                  roundWon ? 'bg-correct-answer text-white' : ''
+                }`}
+              >
+                {revealedAnswer || currentAnswer}
               </div>
             </div>
 
             {/* Timer Progress Bar */}
-            {isSplitting && (
+            {isSplitting && !roundWon && !isRevealed && (
               <div className="-mx-3 -mb-3">
                 <div className="h-1 bg-dark-grey">
                   <div 

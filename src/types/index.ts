@@ -55,6 +55,8 @@ export interface GameState {
   status: 'waiting' | 'playing' | 'revealed';
   timerResetCount: number;
   roundWon: boolean;
+  revealedAnswer?: string;
+  entryId?: number;
 }
 
 export interface Player {
