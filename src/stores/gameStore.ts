@@ -25,6 +25,7 @@ interface GameStore extends GameState {
   setCoins: (coins: number) => void;
   updateCoins: (delta: number) => void;
   setStatus: (status: GameState['status']) => void;
+  setRoundWon: (won: boolean) => void;
   resetTimer: () => void;
   reset: () => void;
 }
@@ -50,6 +51,7 @@ const initialState: GameState = {
   coins: 0,
   status: 'waiting',
   timerResetCount: 0,
+  roundWon: false,
 };
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -111,6 +113,8 @@ export const useGameStore = create<GameStore>((set) => ({
   updateCoins: (delta) => set((state) => ({ coins: state.coins + delta })),
   
   setStatus: (status) => set({ status }),
+  
+  setRoundWon: (won) => set({ roundWon: won }),
   
   resetTimer: () => set((state) => ({ timerResetCount: state.timerResetCount + 1 })),
   

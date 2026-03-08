@@ -28,6 +28,7 @@ export const GamePage = () => {
     status,
     gameState,
     timerResetCount,
+    roundWon,
   } = useGameStore();
 
   const [localElapsed, setLocalElapsed] = useState(0);
@@ -99,7 +100,7 @@ export const GamePage = () => {
   };
 
   const myUserId = user?._id;
-  const canSubmit = status === 'playing' && answer.trim();
+  const canSubmit = status === 'playing' && gameState === 'split' && !roundWon && answer.trim();
 
   const getRightsLabel = (rights?: number) => {
     if (rights === 1) return 'MOD';
@@ -118,7 +119,7 @@ export const GamePage = () => {
         <button
           onClick={() => {
             setShowPlayerDrawer(!showPlayerDrawer);
-            if (!showPlayerDrawer) requestPlayerList();
+            requestPlayerList();
           }}
           className="flex items-center gap-1 text-primary"
         >

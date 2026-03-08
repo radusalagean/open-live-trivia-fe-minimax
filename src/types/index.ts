@@ -54,6 +54,7 @@ export interface GameState {
   coins: number;
   status: 'waiting' | 'playing' | 'revealed';
   timerResetCount: number;
+  roundWon: boolean;
 }
 
 export interface Player {

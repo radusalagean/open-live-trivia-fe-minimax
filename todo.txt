@@ -1,0 +1,4 @@
+- Include images from android, logo, coin icon, etc
+- Animations
+- Sounds
+

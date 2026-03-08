@@ -30,6 +30,7 @@ export const useSocket = () => {
     updateCoins,
     setCoins,
     setStatus,
+    setRoundWon,
     resetTimer,
   } = useGameStore();
 
@@ -124,10 +125,14 @@ export const useSocket = () => {
       username: string; 
       message: string;
       correct: boolean;
+      correctAnswer?: string;
     }) => {
       console.log('PEER_ATTEMPT:', attempt);
       addPeerAttempt(attempt);
       useGameStore.getState().addAttempt(attempt);
+      if (attempt.correct) {
+        setRoundWon(true);
+      }
     };
 
     const onRound = (data: { 
@@ -148,6 +153,8 @@ export const useSocket = () => {
       setSplitting(false);
       setRevealed(false);
       setStatus('playing');
+      setEntryReported(false);
+      setRoundWon(false);
       resetTimer();
     };
 
