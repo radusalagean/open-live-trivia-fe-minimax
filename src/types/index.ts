@@ -53,6 +53,7 @@ export interface GameState {
   peerAttempts: Attempt[];
   coins: number;
   status: 'waiting' | 'playing' | 'revealed';
+  timerResetCount: number;
 }
 
 export interface Player {

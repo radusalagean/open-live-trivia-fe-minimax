@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSocket } from '@/hooks/useSocket';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
 
 export const GamePage = () => {
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { submitAttempt, reportEntry, requestPlayerList } = useSocket();
   const [answer, setAnswer] = useState('');
@@ -19,7 +17,6 @@ export const GamePage = () => {
     clue,
     answer: currentAnswer,
     currentValue,
-    elapsedSplitSeconds,
     totalSplitSeconds,
     entryReported,
     playerCount,
@@ -29,48 +26,54 @@ export const GamePage = () => {
     attempts,
     coins,
     status,
+    gameState,
+    timerResetCount,
   } = useGameStore();
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const [localElapsed, setLocalElapsed] = useState(0);
+  const prevTimerResetCount = useRef(timerResetCount);
+  const intervalRef = useRef<number | null>(null);
   
   useEffect(() => {
-    if (!isSplitting) {
-      setLocalElapsed(elapsedSplitSeconds);
+    if (timerResetCount !== prevTimerResetCount.current) {
+      prevTimerResetCount.current = timerResetCount;
+      setLocalElapsed(0);
+    }
+  }, [timerResetCount]);
+  
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    if (isRevealed || gameState === 'waiting' || !isSplitting) {
       return;
     }
     
     const maxSeconds = totalSplitSeconds || 15;
-    const initialElapsed = elapsedSplitSeconds || 0;
-    setLocalElapsed(initialElapsed);
+    setLocalElapsed(0);
     
-    const interval = setInterval(() => {
+    intervalRef.current = window.setInterval(() => {
       setLocalElapsed((prev) => {
         if (prev >= maxSeconds) {
-          clearInterval(interval);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           return maxSeconds;
         }
         return prev + 1;
       });
     }, 1000);
     
-    return () => clearInterval(interval);
-  }, [isSplitting, totalSplitSeconds, elapsedSplitSeconds]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isSplitting, totalSplitSeconds, gameState, isRevealed]);
 
   const progressPercent = totalSplitSeconds > 0 
     ? ((totalSplitSeconds - localElapsed) / totalSplitSeconds) * 100 
@@ -95,31 +98,6 @@ export const GamePage = () => {
     }
   };
 
-  const getDisplayAnswer = () => {
-    if (isRevealed) return currentAnswer;
-    if (!currentAnswer) return '';
-    
-    if (isSplitting && totalSplitSeconds > 0) {
-      const revealRatio = Math.min(1, localElapsed / totalSplitSeconds);
-      const chars = currentAnswer.split('');
-      const lettersOnly = currentAnswer.replace(/[^a-zA-Z]/g, '');
-      const lettersToShow = Math.floor(lettersOnly.length * revealRatio);
-      
-      let letterIndex = 0;
-      return chars.map((char) => {
-        if (/[a-zA-Z]/.test(char)) {
-          const shouldShow = letterIndex < lettersToShow;
-          letterIndex++;
-          return shouldShow ? char : '_';
-        }
-        return char;
-      }).join('');
-    }
-    
-    return currentAnswer.replace(/[a-zA-Z]/g, '_');
-  };
-
-  const displayedAnswer = getDisplayAnswer();
   const myUserId = user?._id;
   const canSubmit = status === 'playing' && answer.trim();
 
@@ -218,7 +196,7 @@ export const GamePage = () => {
             {/* Answer */}
             <div className="text-center mb-3">
               <div className="answer-text inline-block px-2 py-0.5">
-                {displayedAnswer}
+                {currentAnswer}
               </div>
             </div>
 
@@ -227,7 +205,7 @@ export const GamePage = () => {
               <div className="-mx-3 -mb-3">
                 <div className="h-1 bg-dark-grey">
                   <div 
-                    className="h-full bg-accent transition-all duration-1000 ease-linear"
+                    className="h-full bg-accent"
                     style={{ width: `${Math.max(0, progressPercent)}%` }}
                   />
                 </div>

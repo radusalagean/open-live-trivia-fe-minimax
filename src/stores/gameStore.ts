@@ -25,6 +25,7 @@ interface GameStore extends GameState {
   setCoins: (coins: number) => void;
   updateCoins: (delta: number) => void;
   setStatus: (status: GameState['status']) => void;
+  resetTimer: () => void;
   reset: () => void;
 }
 
@@ -48,6 +49,7 @@ const initialState: GameState = {
   peerAttempts: [],
   coins: 0,
   status: 'waiting',
+  timerResetCount: 0,
 };
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -109,6 +111,8 @@ export const useGameStore = create<GameStore>((set) => ({
   updateCoins: (delta) => set((state) => ({ coins: state.coins + delta })),
   
   setStatus: (status) => set({ status }),
+  
+  resetTimer: () => set((state) => ({ timerResetCount: state.timerResetCount + 1 })),
   
   reset: () => set(initialState),
 }));

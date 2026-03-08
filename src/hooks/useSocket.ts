@@ -30,6 +30,7 @@ export const useSocket = () => {
     updateCoins,
     setCoins,
     setStatus,
+    resetTimer,
   } = useGameStore();
 
   useEffect(() => {
@@ -147,6 +148,7 @@ export const useSocket = () => {
       setSplitting(false);
       setRevealed(false);
       setStatus('playing');
+      resetTimer();
     };
 
     const onSplit = (data: { 
@@ -163,6 +165,7 @@ export const useSocket = () => {
       
       const revealedChars = data.answer.replace(/_/g, '').split('');
       setRevealedChars(revealedChars);
+      resetTimer();
     };
 
     const onReveal = (data: { answer: string }) => {
