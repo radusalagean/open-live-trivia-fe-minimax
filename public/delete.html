@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Account Request</title>
+</head>
+<body>
+    <h1>Delete Account Request</h1>
+    <p>If you want your "Open Live Trivia" account to be deleted, please click the button below.</p>
+    <p><strong>Send your account deletion request from the email address associated with your in-game account.</strong></p>
+    <button id="deleteAccountButton">Request account deletion</button>
+    <script>
+        document.getElementById('deleteAccountButton').addEventListener('click', function() {
+            window.location.href = 'mailto:contact@radusalagean.com?subject=Open%20Live%20Trivia%20-%20Account%20Deletion%20Request&body=Please%20delete%20my%20%22Open%20Live%20Trivia%22%20account%20associated%20with%20the%20email%20address%20I%20used%20to%20write%20this%20email.';
+        });
+    </script>
+    <p>The data associated with your user will be deleted from the game server.</p>
+    <p>I will respond to your request as soon as possible.</p>
+</body>
+</html>
