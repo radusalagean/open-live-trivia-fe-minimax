@@ -5,6 +5,7 @@ import { auth, googleProvider } from '@/lib/firebase';
 import { useAuthStore } from '@/stores/authStore';
 import { systemApi } from '@/api/endpoints';
 import { Disclaimer } from '@/components/Disclaimer';
+import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 
 const FRONTEND_VERSION = '1.0.0';
 
@@ -129,6 +130,10 @@ export const LoginPage = () => {
 
         <div className="mt-6">
           <Disclaimer />
+        </div>
+
+        <div className="mt-4 text-center">
+          <BuildInfoLabel />
         </div>
       </div>
     </div>

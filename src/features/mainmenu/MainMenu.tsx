@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { systemApi } from '@/api/endpoints';
 import { useEffect } from 'react';
-import { BUILD_INFO } from '@/build-info';
+import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 import { Disclaimer } from '@/components/Disclaimer';
 
 const RIGHTS_LABELS = ['', 'Moderator', 'Admin'];
@@ -100,7 +100,7 @@ export const MainMenu = () => {
 
       {/* Footer */}
       <div className="mt-8 text-center">
-        <span className="text-xs text-super-ultra-dark-grey">Built at: {BUILD_INFO.builtAt}</span>
+        <BuildInfoLabel />
         <div className="mt-2 max-w-xs mx-auto">
           <Disclaimer />
         </div>
