@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
+import { config } from './config';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://openlivetrivia.com';
+const SOCKET_URL = config.apiUrl.replace('/api', '');
 
 export const socket: Socket = io(SOCKET_URL, {
   autoConnect: false,

@@ -8,8 +8,6 @@ RUN npm install
 
 COPY . .
 
-ENV ENV_FILE=/app/env/fe.env
-ENV SECRETS_ENV_FILE=/app/env/fe-secrets.env
 RUN npm run build
 
 FROM nginx:stable-alpine

@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-ENV ENV_FILE=/app/env/fe.env
-ENV SECRETS_ENV_FILE=/app/env/fe-secrets.env
 RUN npm install
 
 EXPOSE 5173

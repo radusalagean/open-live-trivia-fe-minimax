@@ -33,6 +33,11 @@
 .env
 .env.local
 .env.*.local
+/env/
+
+# Ignore config files (we attach them at runtime instead)
+/config.js
+/firebase-config.js
 
 # Ignore logs and temp files
 /log/*

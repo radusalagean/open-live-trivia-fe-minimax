@@ -1,11 +1,42 @@
+declare global {
+  interface Window {
+    APP_CONFIG: {
+      apiUrl: string;
+    };
+    FIREBASE_CONFIG: {
+      apiKey: string;
+      authDomain: string;
+      projectId: string;
+      storageBucket: string;
+      messagingSenderId: string;
+      appId: string;
+    };
+  }
+}
+
+const appConfig = typeof window !== 'undefined' ? window.APP_CONFIG : undefined;
+const firebaseConfig = typeof window !== 'undefined' ? window.FIREBASE_CONFIG : undefined;
+
+if (!appConfig) {
+  throw new Error('APP_CONFIG is not defined. Ensure config.js is loaded before the app.');
+}
+
+if (!appConfig.apiUrl) {
+  throw new Error('APP_CONFIG.apiUrl is required.');
+}
+
+if (!firebaseConfig) {
+  throw new Error('FIREBASE_CONFIG is not defined. Ensure firebase-config.js is loaded before the app.');
+}
+
+const requiredFirebaseFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'] as const;
+const missingFields = requiredFirebaseFields.filter(field => !firebaseConfig[field]);
+
+if (missingFields.length > 0) {
+  throw new Error(`FIREBASE_CONFIG is incomplete. Missing fields: ${missingFields.join(', ')}`);
+}
+
 export const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'https://openlivetrivia.com/api',
-  firebase: {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-  },
+  apiUrl: appConfig.apiUrl,
+  firebase: firebaseConfig,
 };

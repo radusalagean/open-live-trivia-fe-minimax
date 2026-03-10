@@ -13,6 +13,10 @@ dist-ssr
 *.local
 .env
 
+# Local config files (mounted from $HOME/.open-live-trivia_vault/)
+config.js
+firebase-config.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
