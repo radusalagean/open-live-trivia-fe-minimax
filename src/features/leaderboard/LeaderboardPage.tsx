@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { leaderboardApi } from '@/api/endpoints';
 import type { LeaderboardEntry } from '@/types';
+import { Avatar } from '@/components/Avatar';
 
 const RIGHTS_LABELS = ['', 'MOD', 'ADMIN'];
 
@@ -104,9 +105,7 @@ export const LeaderboardPage = () => {
               </span>
               
               {/* Avatar */}
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold ml-3">
-                {entry.username.charAt(0).toUpperCase()}
-              </div>
+              <Avatar userId={entry._id} username={entry.username} className="ml-3" />
               
               {/* Username & Rights */}
               <div className="flex-1 ml-3 min-w-0">
@@ -123,9 +122,7 @@ export const LeaderboardPage = () => {
               {/* Coins */}
               <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                 <span className="text-gray-800 font-mono font-bold">{entry.coins.toLocaleString()}</span>
-                <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-                  <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
-                </div>
+                <img src="/coin.png" alt="Coins" className="w-5 h-5 align-text-bottom" />
               </div>
             </div>
           ))}

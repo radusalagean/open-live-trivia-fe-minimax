@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
+import { Avatar } from '@/components/Avatar';
 
 export const GamePage = () => {
   const { user } = useAuthStore();
@@ -231,9 +232,7 @@ export const GamePage = () => {
                 className={`flex ${isMyAttempt ? 'justify-end' : 'justify-start'}`}
               >
                 {!isMyAttempt && (
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm mr-2 flex-shrink-0">
-                    {attempt.username.charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar userId={attempt.userId} username={attempt.username} size="sm" className="mr-2" />
                 )}
                 <div 
                   onClick={() => isMyAttempt && handleCopyAttempt(attempt.message)}
@@ -251,9 +250,7 @@ export const GamePage = () => {
                   </p>
                 </div>
                 {isMyAttempt && (
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm ml-2 flex-shrink-0">
-                    {attempt.username.charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar userId={attempt.userId} username={attempt.username} size="sm" className="ml-2" />
                 )}
               </div>
             );
@@ -317,9 +314,7 @@ export const GamePage = () => {
                       className="flex items-center justify-between p-3 bg-light-grey rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                          {player.username[0].toUpperCase()}
-                        </div>
+                        <Avatar userId={player.id} username={player.username} size="sm" />
                         <span className="text-gray-800">{player.username}</span>
                         {player.isMe && (
                           <span className="text-xs bg-primary text-white px-1 rounded">You</span>
