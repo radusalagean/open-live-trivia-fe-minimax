@@ -2,13 +2,15 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+ARG COMMIT_SHA=
+
 COPY package.json package-lock.json ./
 
 RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN COMMIT_SHA=$COMMIT_SHA npm run build
 
 FROM nginx:stable-alpine
 

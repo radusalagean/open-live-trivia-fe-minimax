@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 const now = new Date();
 const buildTime = now.toISOString().replace('T', ' - ').slice(0, -5) + ' UTC';
 
-let commitHash = process.env.GITHUB_SHA?.slice(0, 7) || 'unknown';
+let commitHash = process.env.COMMIT_SHA || 'unknown';
 if (commitHash === 'unknown') {
   try {
     commitHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
