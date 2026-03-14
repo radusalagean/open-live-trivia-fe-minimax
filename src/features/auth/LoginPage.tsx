@@ -135,6 +135,10 @@ export const LoginPage = () => {
         <div className="mt-4 text-center">
           <BuildInfoLabel />
         </div>
+
+        <div className="mt-4 text-right">
+          <a href="/privacy-policy.html" className="text-xs text-gray-500 hover:text-primary underline">Privacy Policy</a>
+        </div>
       </div>
     </div>
   );

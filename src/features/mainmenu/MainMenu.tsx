@@ -104,6 +104,9 @@ export const MainMenu = () => {
         <div className="mt-2 max-w-xs mx-auto">
           <Disclaimer />
         </div>
+        <div className="mt-4 text-right">
+          <a href="/privacy-policy.html" className="text-xs text-gray-500 hover:text-primary underline">Privacy Policy</a>
+        </div>
       </div>
     </div>
   );
