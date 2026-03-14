@@ -17,6 +17,7 @@ export const GamePage = () => {
   useSound();
   const [answer, setAnswer] = useState('');
   const [showPlayerDrawer, setShowPlayerDrawer] = useState(false);
+  const [isClosingDrawer, setIsClosingDrawer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const attemptsEndRef = useRef<HTMLDivElement>(null);
@@ -314,17 +315,29 @@ export const GamePage = () => {
       </div>
 
       {/* Player Drawer Overlay */}
-      {showPlayerDrawer && (
+      {(showPlayerDrawer || isClosingDrawer) && (
         <div className="fixed inset-0 z-20">
           <div 
             className="absolute inset-0 bg-black/30"
-            onClick={() => setShowPlayerDrawer(false)}
+            onClick={() => {
+              setIsClosingDrawer(true);
+              setTimeout(() => {
+                setShowPlayerDrawer(false);
+                setIsClosingDrawer(false);
+              }, 300);
+            }}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-80 bg-white shadow-xl flex flex-col">
+          <div className={`absolute left-0 top-0 bottom-0 w-80 bg-white shadow-xl flex flex-col ${isClosingDrawer ? 'animate-slide-out-x' : 'animate-slide-in-x'}`}>
             <div className="p-4 border-b border-light-grey flex justify-between items-center">
               <h2 className="text-gray-800 font-bold text-lg">Players</h2>
               <button
-                onClick={() => setShowPlayerDrawer(false)}
+                onClick={() => {
+                  setIsClosingDrawer(true);
+                  setTimeout(() => {
+                    setShowPlayerDrawer(false);
+                    setIsClosingDrawer(false);
+                  }, 300);
+                }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 ✕
