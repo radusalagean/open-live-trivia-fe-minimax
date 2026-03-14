@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, UsersIcon, VolumeIcon, VolumeMuted } from '@/components/icons';
 import { useSocket } from '@/hooks/useSocket';
@@ -23,6 +23,7 @@ export const GamePage = () => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const attemptsEndRef = useRef<HTMLDivElement>(null);
+  const attemptsContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     category,
@@ -127,9 +128,38 @@ export const GamePage = () => {
     return null;
   };
 
+  const scrollToBottom = useCallback((smooth = false) => {
+    attemptsEndRef.current?.scrollIntoView({ 
+      behavior: smooth ? 'smooth' : 'auto',
+      block: 'end'
+    });
+  }, []);
+
+  const checkIfCanScroll = useCallback(() => {
+    const container = attemptsContainerRef.current;
+    if (!container) return false;
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    return scrollHeight - scrollTop - clientHeight > 50;
+  }, []);
+
   useEffect(() => {
-    attemptsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [attempts]);
+    if (attempts.length === 0) return;
+    
+    const container = attemptsContainerRef.current;
+    if (!container) {
+      scrollToBottom(false);
+      return;
+    }
+
+    const myUserId = user?._id;
+    const lastAttempt = attempts[attempts.length - 1];
+    const isMyAttempt = lastAttempt?.userId === myUserId;
+    const canScroll = checkIfCanScroll();
+
+    if (isMyAttempt || !canScroll) {
+      scrollToBottom(true);
+    }
+  }, [attempts, user?._id, scrollToBottom, checkIfCanScroll]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -175,9 +205,8 @@ export const GamePage = () => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Entry Card */}
+      {/* Entry Card - Sticky at top */}
+      <div className="p-4 flex-shrink-0">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300">
           <div className="p-3">
             {/* Category & Coins Row */}
@@ -246,7 +275,13 @@ export const GamePage = () => {
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Scrollable Attempts Container */}
+      <div 
+        ref={attemptsContainerRef}
+        className="flex-1 overflow-y-auto p-4"
+      >
         {/* Attempts List - Android style bubbles */}
         <div className="space-y-2">
           {attempts.map((attempt, i) => {
