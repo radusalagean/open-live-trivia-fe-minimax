@@ -133,7 +133,7 @@ export const GamePage = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/')}
-            className="text-primary hover:text-primary-dark"
+            className="text-primary hover:text-primary-dark clickable p-1"
           >
             <ArrowLeftIcon />
           </button>
@@ -142,7 +142,7 @@ export const GamePage = () => {
               setShowPlayerDrawer(!showPlayerDrawer);
               requestPlayerList();
             }}
-            className="flex items-center gap-1 text-primary"
+            className="flex items-center gap-1 text-primary rounded px-2 py-1 hover:bg-dark-grey transition-colors"
           >
             <UsersIcon />
             <span className="font-medium">{playerCount}</span>
@@ -162,7 +162,7 @@ export const GamePage = () => {
               }
               setSoundEffects(!soundEffects);
             }}
-            className="text-gray-600 hover:text-gray-800"
+            className="text-gray-600 hover:text-gray-800 clickable p-1"
           >
             {soundEffects ? <VolumeIcon /> : <VolumeMuted />}
           </button>
@@ -193,7 +193,7 @@ export const GamePage = () => {
               <div className="ml-2 relative" ref={menuRef}>
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="p-1 text-super-ultra-dark-grey hover:text-gray-700"
+                  className="p-1 text-super-ultra-dark-grey hover:text-gray-700 clickable rounded-full"
                 >
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
@@ -265,7 +265,7 @@ export const GamePage = () => {
                     attempt.correct 
                       ? 'bg-accent text-black' 
                       : 'bg-dark-grey text-black'
-                  } ${isMyAttempt && status === 'playing' ? 'cursor-pointer hover:opacity-80' : ''}`}
+                  } ${isMyAttempt && status === 'playing' ? 'cursor-pointer hover:brightness-95' : ''}`}
                 >
                   {!isMyAttempt && (
                     <p className="text-xs text-gray-500 mb-1 font-light italic">{attempt.username}</p>
@@ -303,7 +303,7 @@ export const GamePage = () => {
             <button
               type="submit"
               disabled={!canSubmit}
-              className="p-2 bg-primary text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 bg-primary text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition-all"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />

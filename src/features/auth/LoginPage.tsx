@@ -103,7 +103,7 @@ export const LoginPage = () => {
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full py-3 px-4 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+          className="w-full py-3 px-4 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:brightness-110 transition-all"
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>

@@ -34,7 +34,7 @@ export const MainMenu = () => {
           {user && user.rights > 0 && (
             <button
               onClick={() => navigate('/moderate')}
-              className="text-xs bg-rights-indicator text-white px-2 py-1 rounded"
+              className="text-xs bg-rights-indicator text-white px-2 py-1 rounded hover:bg-warn transition-colors"
             >
               {getRightsLabel(user.rights)}
             </button>
@@ -44,7 +44,7 @@ export const MainMenu = () => {
             href="https://github.com/radusalagean/open-live-trivia-fe-minimax"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1"
+            className="p-1 rounded-lg hover:bg-dark-grey transition-colors"
           >
             <img src="/github-icon.png" alt="GitHub" className="w-6 h-6" />
           </a>

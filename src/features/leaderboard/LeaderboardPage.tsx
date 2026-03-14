@@ -70,7 +70,7 @@ export const LeaderboardPage = () => {
       <div className="bg-white px-4 py-3 shadow-md flex items-center">
         <button
           onClick={() => navigate('/')}
-          className="text-primary hover:text-primary-dark"
+          className="text-primary hover:text-primary-dark clickable px-2 py-1"
         >
           ← Back
         </button>

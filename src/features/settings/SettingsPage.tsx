@@ -76,7 +76,7 @@ export const SettingsPage = () => {
       <div className="bg-white px-4 py-3 shadow-md flex items-center">
         <button
           onClick={() => navigate('/')}
-          className="text-primary hover:text-primary-dark"
+          className="text-primary hover:text-primary-dark clickable px-2 py-1"
         >
           ← Back
         </button>
@@ -135,14 +135,14 @@ export const SettingsPage = () => {
           <div className="p-4 space-y-3">
             <button
               onClick={handleLogout}
-              className="w-full py-3 bg-super-ultra-dark-grey text-white font-bold rounded-lg"
+              className="w-full py-3 bg-super-ultra-dark-grey text-white font-bold rounded-lg hover:bg-gray-600 transition-colors"
             >
               Logout
             </button>
 
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="w-full py-3 bg-negative/10 text-negative font-bold rounded-lg"
+              className="w-full py-3 bg-negative/10 text-negative font-bold rounded-lg hover:bg-negative/20 transition-colors"
             >
               Delete Account
             </button>
@@ -155,7 +155,7 @@ export const SettingsPage = () => {
               <button
                 onClick={handleDisconnectAll}
                 disabled={disconnecting}
-                className="w-full py-3 bg-negative text-white font-bold rounded-lg disabled:opacity-50"
+                className="w-full py-3 bg-negative text-white font-bold rounded-lg disabled:opacity-50 hover:bg-red-600 transition-colors"
               >
                 {disconnecting ? 'Disconnecting...' : 'Disconnect All Players'}
               </button>
@@ -175,14 +175,14 @@ export const SettingsPage = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 py-2 bg-light-grey text-gray-700 rounded-lg hover:bg-medium-grey"
+                className="flex-1 py-2 bg-light-grey text-gray-700 rounded-lg hover:bg-dark-grey transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleting}
-                className="flex-1 py-2 bg-negative text-white rounded-lg disabled:opacity-50"
+                className="flex-1 py-2 bg-negative text-white rounded-lg disabled:opacity-50 hover:bg-red-600 transition-colors"
               >
                 {deleting ? 'Deleting...' : 'Delete'}
               </button>

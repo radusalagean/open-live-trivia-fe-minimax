@@ -100,7 +100,7 @@ export const ModerationPage = () => {
       <div className="bg-white px-4 py-3 shadow-md flex items-center">
         <button
           onClick={() => navigate('/')}
-          className="text-primary hover:text-primary-dark"
+          className="text-primary hover:text-primary-dark clickable px-2 py-1"
         >
           ← Back
         </button>
@@ -115,8 +115,8 @@ export const ModerationPage = () => {
           className={`flex-1 py-3 text-center font-medium ${
             activeTab === 'reported'
               ? 'text-primary border-b-2 border-primary'
-              : 'text-gray-500'
-          }`}
+              : 'text-gray-500 hover:bg-light-grey'
+          } transition-colors`}
         >
           Reported Entries
         </button>
@@ -125,8 +125,8 @@ export const ModerationPage = () => {
           className={`flex-1 py-3 text-center font-medium ${
             activeTab === 'banned'
               ? 'text-primary border-b-2 border-primary'
-              : 'text-gray-500'
-          }`}
+              : 'text-gray-500 hover:bg-light-grey'
+          } transition-colors`}
         >
           Banned Entries
         </button>
@@ -190,14 +190,14 @@ export const ModerationPage = () => {
                       <button
                         onClick={() => handleBan(report._id)}
                         disabled={actionLoading === report._id}
-                        className="flex-1 py-2 bg-negative text-white rounded text-sm font-medium disabled:opacity-50"
+                        className="flex-1 py-2 bg-negative text-white rounded text-sm font-medium disabled:opacity-50 hover:bg-red-600 transition-colors"
                       >
                         {actionLoading === report._id ? 'Banning...' : 'Ban'}
                       </button>
                       <button
                         onClick={() => handleDismiss(report._id)}
                         disabled={actionLoading === report._id}
-                        className="flex-1 py-2 bg-gray-500 text-white rounded text-sm font-medium disabled:opacity-50"
+                        className="flex-1 py-2 bg-gray-500 text-white rounded text-sm font-medium disabled:opacity-50 hover:bg-gray-600 transition-colors"
                       >
                         Dismiss
                       </button>
@@ -206,7 +206,7 @@ export const ModerationPage = () => {
                     <button
                       onClick={() => handleUnban(report._id)}
                       disabled={actionLoading === report._id}
-                      className="flex-1 py-2 bg-primary text-white rounded text-sm font-medium disabled:opacity-50"
+                      className="flex-1 py-2 bg-primary text-white rounded text-sm font-medium disabled:opacity-50 hover:brightness-110 transition-all"
                     >
                       {actionLoading === report._id ? 'Unbanning...' : 'Unban'}
                     </button>
