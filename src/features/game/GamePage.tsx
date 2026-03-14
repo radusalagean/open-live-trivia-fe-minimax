@@ -1,12 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeftIcon, UsersIcon, UserIcon, VolumeIcon, VolumeMuted } from '@/components/icons';
 import { useSocket } from '@/hooks/useSocket';
+import { useSound } from '@/hooks/useSound';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useSettingsStore } from '@/stores/settingsStore';
+import { stopAllSounds } from '@/lib/sounds';
 import { Avatar } from '@/components/Avatar';
 
 export const GamePage = () => {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { submitAttempt, reportEntry, requestPlayerList } = useSocket();
+  const { setSoundEffects, soundEffects } = useSettingsStore();
+  useSound();
   const [answer, setAnswer] = useState('');
   const [showPlayerDrawer, setShowPlayerDrawer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -122,29 +130,46 @@ export const GamePage = () => {
     <div className="flex flex-col h-screen">
       {/* Header */}
       <div className="bg-white px-4 py-3 shadow-md flex items-center justify-between flex-shrink-0">
-        <button
-          onClick={() => {
-            setShowPlayerDrawer(!showPlayerDrawer);
-            requestPlayerList();
-          }}
-          className="flex items-center gap-1 text-primary"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span className="font-medium">{playerCount}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/')}
+            className="text-primary hover:text-primary-dark"
+          >
+            <ArrowLeftIcon />
+          </button>
+          <button
+            onClick={() => {
+              setShowPlayerDrawer(!showPlayerDrawer);
+              requestPlayerList();
+            }}
+            className="flex items-center gap-1 text-primary"
+          >
+            <UsersIcon />
+            <span className="font-medium">{playerCount}</span>
+          </button>
+        </div>
         
         <div className="flex items-center gap-1">
           <img src="/coin.png" alt="Coins" className="w-5 h-5" />
           <span className="font-bold font-mono text-gray-800">{coins.toFixed(2)}</span>
         </div>
         
-        <div className="flex items-center gap-1 text-gray-700 bg-light-grey px-3 py-1 rounded">
-          <span className="font-medium max-w-[100px] truncate">{user?.username}</span>
-          <svg className="w-5 h-5 text-super-dark-grey" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (!soundEffects) {
+                stopAllSounds();
+              }
+              setSoundEffects(!soundEffects);
+            }}
+            className="text-gray-600 hover:text-gray-800"
+          >
+            {soundEffects ? <VolumeIcon /> : <VolumeMuted />}
+          </button>
+          <div className="flex items-center gap-1 text-gray-700 bg-light-grey px-3 py-1 rounded">
+            <span className="font-medium max-w-[100px] truncate">{user?.username}</span>
+            <UserIcon className="w-5 h-5 text-super-dark-grey" />
+          </div>
         </div>
       </div>
 
