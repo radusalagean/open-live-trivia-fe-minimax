@@ -14,6 +14,7 @@ export const ModerationPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const fetchReports = useCallback(async (pageNum: number) => {
     setLoading(true);
@@ -49,11 +50,16 @@ export const ModerationPage = () => {
 
   const handleBan = async (reportId: string) => {
     setActionLoading(reportId);
+    setRemovingId(reportId);
     try {
       await reportApi.banEntry(reportId);
-      fetchReports();
+      setTimeout(() => {
+        setRemovingId(null);
+        setReports((prev) => prev.filter((r) => r._id !== reportId));
+      }, 300);
     } catch (error) {
       console.error('Failed to ban entry:', error);
+      setRemovingId(null);
     } finally {
       setActionLoading(null);
     }
@@ -61,11 +67,16 @@ export const ModerationPage = () => {
 
   const handleUnban = async (reportId: string) => {
     setActionLoading(reportId);
+    setRemovingId(reportId);
     try {
       await reportApi.unbanEntry(reportId);
-      fetchReports();
+      setTimeout(() => {
+        setRemovingId(null);
+        setReports((prev) => prev.filter((r) => r._id !== reportId));
+      }, 300);
     } catch (error) {
       console.error('Failed to unban entry:', error);
+      setRemovingId(null);
     } finally {
       setActionLoading(null);
     }
@@ -75,7 +86,7 @@ export const ModerationPage = () => {
     setActionLoading(reportId);
     try {
       await reportApi.dismissReport(reportId);
-      fetchReports();
+      setReports((prev) => prev.filter((r) => r._id !== reportId));
     } catch (error) {
       console.error('Failed to dismiss report:', error);
     } finally {
@@ -94,13 +105,7 @@ export const ModerationPage = () => {
           ← Back
         </button>
         <h1 className="flex-1 text-center text-gray-800 font-bold text-lg">Moderation</h1>
-        <button
-          onClick={fetchReports}
-          className="text-primary hover:text-primary-dark"
-          disabled={loading}
-        >
-          ↻
-        </button>
+        <div className="w-8"></div>
       </div>
 
       {/* Tabs */}
@@ -141,7 +146,12 @@ export const ModerationPage = () => {
           <>
             <div className="space-y-4">
               {reports.map((report) => (
-              <div key={report._id} className="bg-white rounded-lg shadow overflow-hidden">
+              <div 
+                key={report._id} 
+                className={`bg-white rounded-lg shadow overflow-hidden transition-opacity duration-300 ${
+                  removingId === report._id ? 'opacity-0' : 'opacity-100'
+                }`}
+              >
                 <div className="p-4">
                   {/* Category */}
                   {report.category && (
