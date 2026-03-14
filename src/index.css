@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;1,300;1,400&family=Share+Tech+Mono&display=swap');
+
 @import "tailwindcss";
 
 @theme {
@@ -30,34 +32,6 @@
   
   --font-family-mono: "Cutive Mono", "Share Tech Mono", ui-monospace, monospace;
   --font-family-sans: "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
-}
-
-@font-face {
-  font-family: "Nunito Sans";
-  src: url("https://fonts.gstatic.com/s/nunitosans/v14/pe0pMUNMET50lJtcq3NWR22y6qfXmC9l.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Nunito Sans";
-  src: url("https://fonts.gstatic.com/s/nunitosans/v14/pe0qMUNMET50lJtcq3NWR22y6qfXmA9l.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Share Tech Mono";
-  src: url("https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRCCnFt6678KcNkHS0.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Cutive Mono";
-  src: url("https://fonts.gstatic.com/s/cutivemono/v10/h0GsssGi8zD4Jdl2xJ4O3LcdYfM4.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
 }
 
 body {
