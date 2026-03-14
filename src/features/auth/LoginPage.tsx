@@ -12,6 +12,11 @@ const USERNAME_MIN_LENGTH = 4;
 const USERNAME_MAX_LENGTH = 50;
 const USERNAME_CHECK_DEBOUNCE_MS = 500;
 
+const getGoogleIdToken = async (): Promise<string> => {
+  const result = await signInWithPopup(auth, googleProvider);
+  return result.user.getIdToken();
+};
+
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { login, register } = useAuthStore();
@@ -94,15 +99,15 @@ export const LoginPage = () => {
     };
   }, [username, isRegistering, checkUsernameAvailability]);
 
-  const getUsernameValidationError = (): string | null => {
-    if (!username.trim()) return null;
+  const getUsernameValidationError = (): string => {
+    if (!username.trim()) return '';
     if (username.length < USERNAME_MIN_LENGTH) {
       return `Username must be at least ${USERNAME_MIN_LENGTH} characters`;
     }
     if (username.length > USERNAME_MAX_LENGTH) {
       return `Username must be no more than ${USERNAME_MAX_LENGTH} characters`;
     }
-    return null;
+    return '';
   };
 
   const canRegister = (): boolean => {
@@ -116,70 +121,63 @@ export const LoginPage = () => {
   const handleGoogleSignIn = async () => {
     setError('');
     setLoading(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken();
-      
-      if (isRegistering) {
-        const validationError = getUsernameValidationError();
-        if (validationError) {
-          setError(validationError);
-          setLoading(false);
-          return;
-        }
-        if (!canRegister()) {
-          setError('Please enter a valid username');
-          setLoading(false);
-          return;
-        }
-        await register(idToken, username);
-      } else {
-        try {
-          await login(idToken);
-        } catch (loginErr: unknown) {
-          if (loginErr && typeof loginErr === 'object' && 'response' in loginErr) {
-            const axiosErr = loginErr as { response?: { status?: number } };
-            if (axiosErr.response?.status === 404) {
-              idTokenRef.current = idToken;
-              setIsRegistering(true);
-              setError('');
-              setLoading(false);
-              return;
-            }
+
+    const idToken = idTokenRef.current || await getGoogleIdToken();
+
+    if (isRegistering) {
+      const validationError = getUsernameValidationError();
+      if (validationError) {
+        setError(validationError);
+        setLoading(false);
+        return;
+      }
+      if (!canRegister()) {
+        setError('Please enter a valid username');
+        setLoading(false);
+        return;
+      }
+      await register(idToken, username);
+      idTokenRef.current = null;
+    } else {
+      try {
+        await login(idToken);
+      } catch (loginErr: unknown) {
+        if (loginErr && typeof loginErr === 'object' && 'response' in loginErr) {
+          const axiosErr = loginErr as { response?: { status?: number } };
+          if (axiosErr.response?.status === 404) {
+            idTokenRef.current = idToken;
+            setIsRegistering(true);
+            setLoading(false);
+            return;
           }
-          throw loginErr;
         }
+        throw loginErr;
       }
-      navigate('/');
-    } catch (err: unknown) {
-      console.error('Login error:', err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Authentication failed');
-      }
-    } finally {
-      setLoading(false);
     }
+    navigate('/');
   };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
     setError('');
+    setUsernameStatus('idle');
   };
 
-  const getUsernameStatusText = (): string | null => {
-    if (usernameStatus === 'checking') return 'Checking...';
-    if (usernameStatus === 'available') return 'Username available';
-    if (usernameStatus === 'unavailable') return 'Username unavailable';
-    return null;
+  const getUsernameFeedback = (): { text: string; className: string } => {
+    const validationError = getUsernameValidationError();
+    if (validationError) {
+      return { text: validationError, className: 'text-error' };
+    }
+    if (usernameStatus === 'available') {
+      return { text: 'Username available', className: 'text-green-600' };
+    }
+    if (usernameStatus === 'unavailable') {
+      return { text: 'Username unavailable', className: 'text-error' };
+    }
+    return { text: '', className: 'text-transparent' };
   };
 
-  const getUsernameStatusClass = (): string => {
-    if (usernameStatus === 'available') return 'text-green-600';
-    if (usernameStatus === 'unavailable') return 'text-error';
-    return 'text-gray-500';
-  };
+  const usernameFeedback = getUsernameFeedback();
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -202,14 +200,9 @@ export const LoginPage = () => {
               placeholder="Choose a username"
               maxLength={USERNAME_MAX_LENGTH}
             />
-            {getUsernameValidationError() && (
-              <p className="mt-1 text-xs text-error">{getUsernameValidationError()}</p>
-            )}
-            {getUsernameStatusText() && (
-              <p className={`mt-1 text-xs ${getUsernameStatusClass()}`}>
-                {getUsernameStatusText()}
-              </p>
-            )}
+            <p className={`mt-1 text-xs min-h-[1.5em] ${usernameFeedback.className}`}>
+              {usernameFeedback.text}
+            </p>
           </div>
         )}
 
@@ -240,18 +233,7 @@ export const LoginPage = () => {
               <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
           )}
-          {isRegistering ? 'Sign up with Google' : 'Sign in with Google'}
-        </button>
-
-        <button
-          onClick={() => {
-            setIsRegistering(!isRegistering);
-            setError('');
-            setUsernameStatus('idle');
-          }}
-          className="w-full mt-4 text-primary hover:text-primary-dark text-sm transition-colors"
-        >
-          {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+          {isRegistering ? 'Create account' : 'Sign in with Google'}
         </button>
 
         <div className="mt-6">
