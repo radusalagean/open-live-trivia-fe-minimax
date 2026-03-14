@@ -177,7 +177,7 @@ export const GamePage = () => {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Entry Card */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300">
           <div className="p-3">
             {/* Category & Coins Row */}
             <div className="flex items-center justify-between mb-3">
@@ -225,7 +225,7 @@ export const GamePage = () => {
             {/* Answer */}
             <div className="text-center mb-3">
               <div 
-                className={`answer-text inline-block px-2 py-0.5 ${
+                className={`answer-text inline-block px-2 py-0.5 transition-all duration-300 ${
                   roundWon ? 'bg-correct-answer text-white' : 
                   isRevealed ? 'bg-reveal-answer text-white' : ''
                 }`}
@@ -235,16 +235,14 @@ export const GamePage = () => {
             </div>
 
             {/* Timer Progress Bar */}
-            {isSplitting && !roundWon && !isRevealed && (
-              <div className="-mx-3 -mb-3">
-                <div className="h-1 bg-dark-grey">
-                  <div 
-                    className="h-full bg-accent"
-                    style={{ width: `${Math.max(0, progressPercent)}%` }}
-                  />
-                </div>
+            <div className={`-mx-3 -mb-3 transition-all duration-300 ${isSplitting && !roundWon && !isRevealed ? 'opacity-100' : 'opacity-0'}`}>
+              <div className="h-1 bg-dark-grey">
+                <div 
+                  className="h-full bg-accent"
+                  style={{ width: `${Math.max(0, progressPercent)}%` }}
+                />
               </div>
-            )}
+            </div>
           </div>
         </div>
 
