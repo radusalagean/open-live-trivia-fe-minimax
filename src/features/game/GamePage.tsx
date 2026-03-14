@@ -51,10 +51,10 @@ export const GamePage = () => {
     if (timerResetCount !== prevTimerResetCount.current) {
       prevTimerResetCount.current = timerResetCount;
       setLocalElapsed(0);
-    } else if (elapsedSplitSeconds > 0 && localElapsed === 0 && isSplitting) {
+    } else if (elapsedSplitSeconds > 0 && isSplitting) {
       setLocalElapsed(elapsedSplitSeconds);
     }
-  }, [timerResetCount, elapsedSplitSeconds, isSplitting, localElapsed]);
+  }, [timerResetCount, elapsedSplitSeconds, isSplitting]);
   
   useEffect(() => {
     if (intervalRef.current) {
