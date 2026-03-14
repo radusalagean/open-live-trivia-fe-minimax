@@ -62,8 +62,8 @@ export const MainMenu = () => {
 
         {/* Coins */}
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow mb-8">
-          <img src="/coin.png" alt="Coins" className="w-6 h-6" />
-          <span className="font-mono text-xl text-black font-bold">{user?.coins?.toFixed(2) || '0.00'}</span>
+          <img src="/coin.png" alt="Coins" className="w-6 h-6 align-middle" />
+          <span className="text-xl text-black font-bold align-bottom" style={{ fontFamily: '"Share Tech Mono", monospace' }}>{user?.coins?.toFixed(2) || '0.00'}</span>
         </div>
 
         {/* Buttons */}

@@ -151,7 +151,7 @@ export const GamePage = () => {
         
         <div className="flex items-center gap-1">
           <img src="/coin.png" alt="Coins" className="w-5 h-5" />
-          <span className="font-bold font-mono text-gray-800">{coins.toFixed(2)}</span>
+          <span className="font-bold text-gray-800" style={{ fontFamily: '"Share Tech Mono", monospace' }}>{coins.toFixed(2)}</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -185,8 +185,8 @@ export const GamePage = () => {
               )}
               
               <div className="flex items-center gap-1 ml-auto">
-                <span className="text-gray-800 font-mono font-bold">{currentValue.toFixed(2)}</span>
-                <img src="/coin.png" alt="Coins" className="w-5 h-5" />
+                <span className="text-gray-800 font-bold" style={{ fontFamily: '"Share Tech Mono", monospace' }}>{currentValue.toFixed(2)}</span>
+<img src="/coin.png" alt="Coins" className="w-5 h-5 align-middle" />
               </div>
 
               {/* Menu Button */}
