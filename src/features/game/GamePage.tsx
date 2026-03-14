@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, UsersIcon, UserIcon, VolumeIcon, VolumeMuted } from '@/components/icons';
+import { ArrowLeftIcon, UsersIcon, VolumeIcon, VolumeMuted } from '@/components/icons';
 import { useSocket } from '@/hooks/useSocket';
 import { useSound } from '@/hooks/useSound';
 import { useGameStore } from '@/stores/gameStore';
@@ -166,9 +166,9 @@ export const GamePage = () => {
           >
             {soundEffects ? <VolumeIcon /> : <VolumeMuted />}
           </button>
-          <div className="flex items-center gap-1 text-gray-700 bg-light-grey px-3 py-1 rounded">
+          <div className="flex items-center gap-2 text-gray-700 bg-light-grey px-3 py-1 rounded">
+            <Avatar userId={user?._id || ''} username={user?.username || ''} size="sm" />
             <span className="font-medium max-w-[100px] truncate">{user?.username}</span>
-            <UserIcon className="w-5 h-5 text-super-dark-grey" />
           </div>
         </div>
       </div>
