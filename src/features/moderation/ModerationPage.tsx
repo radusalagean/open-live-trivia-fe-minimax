@@ -10,15 +10,22 @@ export const ModerationPage = () => {
   const relativeTime = useSettingsStore((state) => state.relativeTime);
   const [activeTab, setActiveTab] = useState<'reported' | 'banned'>('reported');
   const [reports, setReports] = useState<Report[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const fetchReports = useCallback(async () => {
+  const fetchReports = useCallback(async (pageNum: number) => {
     setLoading(true);
     try {
       const status = activeTab === 'reported' ? 'active' : 'banned';
-      const response = await reportApi.getReports(1, status);
-      setReports(response.items || []);
+      const response = await reportApi.getReports(pageNum, status);
+      if (pageNum === 1) {
+        setReports(response.items || []);
+      } else {
+        setReports((prev) => [...prev, ...(response.items || [])]);
+      }
+      setTotalPages(response.pages);
     } catch (error) {
       console.error('Failed to fetch reports:', error);
     } finally {
@@ -27,8 +34,18 @@ export const ModerationPage = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    fetchReports();
+    setPage(1);
+    fetchReports(1);
   }, [fetchReports]);
+
+  const handleLoadMore = () => {
+    if (loading || page >= totalPages) {
+      return;
+    }
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchReports(nextPage);
+  };
 
   const handleBan = async (reportId: string) => {
     setActionLoading(reportId);
@@ -89,7 +106,7 @@ export const ModerationPage = () => {
       {/* Tabs */}
       <div className="flex bg-white border-b border-light-grey">
         <button
-          onClick={() => setActiveTab('reported')}
+          onClick={() => { setActiveTab('reported'); setPage(1); }}
           className={`flex-1 py-3 text-center font-medium ${
             activeTab === 'reported'
               ? 'text-primary border-b-2 border-primary'
@@ -99,7 +116,7 @@ export const ModerationPage = () => {
           Reported Entries
         </button>
         <button
-          onClick={() => setActiveTab('banned')}
+          onClick={() => { setActiveTab('banned'); setPage(1); }}
           className={`flex-1 py-3 text-center font-medium ${
             activeTab === 'banned'
               ? 'text-primary border-b-2 border-primary'
@@ -121,8 +138,9 @@ export const ModerationPage = () => {
             No {activeTab === 'reported' ? 'reported' : 'banned'} entries
           </div>
         ) : (
-          <div className="space-y-4">
-            {reports.map((report) => (
+          <>
+            <div className="space-y-4">
+              {reports.map((report) => (
               <div key={report._id} className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="p-4">
                   {/* Category */}
@@ -186,7 +204,17 @@ export const ModerationPage = () => {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+
+            {!loading && page < totalPages && (
+              <button
+                onClick={handleLoadMore}
+                className="w-full py-3 text-center text-primary hover:text-primary-dark font-medium"
+              >
+                Load More
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
