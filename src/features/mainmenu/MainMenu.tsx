@@ -2,10 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { systemApi } from '@/api/endpoints';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 import { Disclaimer } from '@/components/Disclaimer';
 import { AnimatedCoins } from '@/components/AnimatedCoins';
+import { playSound } from '@/lib/sounds';
+import { toast } from '@/lib/toast';
 
 const RIGHTS_LABELS = ['', 'Moderator', 'Admin'];
 
@@ -23,12 +25,53 @@ export const MainMenu = () => {
   const navigate = useNavigate();
   const { user, logout, fetchUser } = useAuthStore();
   const showRules = useSettingsStore((state) => state.showRules);
+  const soundEffects = useSettingsStore((state) => state.soundEffects);
   const [showRulesDialog, setShowRulesDialog] = useState(false);
+  const prevCoinsRef = useRef<number | null>(null);
+  const isFirstLoadRef = useRef(true);
+
+  const handleCoinChange = useCallback((newCoins: number) => {
+    if (prevCoinsRef.current !== null && prevCoinsRef.current !== newCoins) {
+      const diff = newCoins - prevCoinsRef.current;
+      if (diff > 0) {
+        if (soundEffects) {
+          playSound('won');
+        }
+        toast.success(`You won ${Math.abs(diff).toFixed(2)} points`);
+      } else if (diff < 0) {
+        if (soundEffects) {
+          playSound('lost');
+        }
+        toast.error(`You lost ${Math.abs(diff).toFixed(2)} points`);
+      }
+    }
+    prevCoinsRef.current = newCoins;
+  }, [soundEffects]);
 
   useEffect(() => {
-    fetchUser();
+    if (user?.coins !== undefined && isFirstLoadRef.current) {
+      prevCoinsRef.current = user.coins;
+      isFirstLoadRef.current = false;
+    }
+  }, [user?.coins]);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const previousCoins = user?.coins;
+      await fetchUser();
+      if (previousCoins !== undefined) {
+        setTimeout(() => {
+          const currentCoins = useAuthStore.getState().user?.coins;
+          if (currentCoins !== undefined) {
+            handleCoinChange(currentCoins);
+          }
+        }, 100);
+      }
+    };
+    loadUser();
     systemApi.getInfo().catch(console.error);
-  }, [fetchUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogout = () => {
     logout();
