@@ -9,6 +9,7 @@ import { useSettingsStore } from '@/stores/settingsStore';
 import { stopAllSounds } from '@/lib/sounds';
 import { Avatar } from '@/components/Avatar';
 import { AnimatedCoins } from '@/components/AnimatedCoins';
+import { UserBadge } from '@/components/UserBadge';
 
 export const GamePage = () => {
   const navigate = useNavigate();
@@ -170,10 +171,7 @@ export const GamePage = () => {
           >
             {soundEffects ? <VolumeIcon /> : <VolumeMuted />}
           </button>
-          <div className="flex items-center gap-2 text-gray-700 bg-light-grey px-3 py-1 rounded">
-            <Avatar userId={user?._id || ''} username={user?.username || ''} size="sm" />
-            <span className="font-medium max-w-[100px] truncate">{user?.username}</span>
-          </div>
+          <UserBadge user={user} />
         </div>
       </div>
 

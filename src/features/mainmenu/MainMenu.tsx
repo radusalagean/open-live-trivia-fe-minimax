@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 import { Disclaimer } from '@/components/Disclaimer';
 import { AnimatedCoins } from '@/components/AnimatedCoins';
+import { UserBadge } from '@/components/UserBadge';
 import { playSound } from '@/lib/sounds';
 import { toast } from '@/lib/toast';
 
@@ -91,11 +92,11 @@ export const MainMenu = () => {
   };
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col h-screen">
       {/* Header */}
-      <div className="flex justify-end items-start">
-        
-        <div className="flex items-center gap-4">
+      <div className="bg-white px-4 py-3 shadow-md flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <UserBadge user={user} />
           {user && user.rights > 0 && (
             <button
               onClick={() => navigate('/moderate')}
@@ -104,20 +105,20 @@ export const MainMenu = () => {
               {getRightsLabel(user.rights)}
             </button>
           )}
-          
-          <a
-            href="https://github.com/radusalagean/open-live-trivia-fe-minimax"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1 rounded-lg hover:bg-dark-grey transition-colors"
-          >
-            <img src="/github-icon.png" alt="GitHub" className="w-6 h-6" />
-          </a>
         </div>
+        
+        <a
+          href="https://github.com/radusalagean/open-live-trivia-fe-minimax"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-1 rounded-lg hover:bg-dark-grey transition-colors"
+        >
+          <img src="/github-icon.png" alt="GitHub" className="w-6 h-6" />
+        </a>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center">
+      <div className="flex-1 flex flex-col items-center justify-center p-4">
         {/* Logo */}
         <img
           src="/logo.png"
