@@ -36,12 +36,18 @@ export const useSound = () => {
       play('split');
     };
 
+    const handleReveal = () => {
+      play('lost');
+    };
+
     socket.on('PEER_ATTEMPT', handleAttempt);
     socket.on('SPLIT', handleSplit);
+    socket.on('REVEAL', handleReveal);
 
     return () => {
       socket.off('PEER_ATTEMPT', handleAttempt);
       socket.off('SPLIT', handleSplit);
+      socket.off('REVEAL', handleReveal);
     };
   }, [playerId, play]);
 };
