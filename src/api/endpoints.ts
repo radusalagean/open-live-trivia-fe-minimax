@@ -6,14 +6,14 @@ export const authApi = {
     const response = await api.post('/user/register', { username }, {
       headers: { Authorization: idToken }
     });
-    return { user: response.data, token: idToken };
+    return { user: response.data as User };
   },
 
   login: async (idToken: string) => {
     const response = await api.post('/user/login', {}, {
       headers: { Authorization: idToken }
     });
-    return { user: response.data, token: idToken };
+    return { user: response.data as User };
   },
 
   getMe: async () => {

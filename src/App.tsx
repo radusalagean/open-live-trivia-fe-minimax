@@ -26,11 +26,12 @@ const Layout = ({ children }: LayoutProps) => {
 };
 
 function App() {
-  const { fetchUser, isLoading } = useAuthStore();
+  const { initializeAuth, isLoading } = useAuthStore();
 
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    const unsubscribe = initializeAuth();
+    return () => unsubscribe();
+  }, [initializeAuth]);
 
   if (isLoading) {
     return (

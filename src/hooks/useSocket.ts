@@ -2,10 +2,10 @@ import { useEffect, useRef, useCallback } from 'react';
 import { socket, connectSocket, disconnectSocket, setAuthenticated } from '@/lib/socket';
 import { useGameStore } from '@/stores/gameStore';
 import { useAuthStore } from '@/stores/authStore';
+import { getIdToken } from '@/lib/firebase';
 import { toast } from '@/lib/toast';
 
 export const useSocket = () => {
-  const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
   const isConnected = useRef(false);
 
@@ -37,10 +37,19 @@ export const useSocket = () => {
   } = useGameStore();
 
   useEffect(() => {
-    if (!token || isConnected.current) return;
+    let mounted = true;
 
-    connectSocket(token);
-    isConnected.current = true;
+    const connect = async () => {
+      if (!user || isConnected.current) return;
+
+      const idToken = await getIdToken();
+      if (!idToken || !mounted) return;
+
+      connectSocket(idToken);
+      isConnected.current = true;
+    };
+
+    connect();
 
     socket.on('connect', () => {
       console.log('Socket connected');
@@ -264,6 +273,7 @@ export const useSocket = () => {
     socket.on('ENTRY_REPORTED_ERROR', onEntryReportedError);
 
     return () => {
+      mounted = false;
       isConnected.current = false;
       disconnectSocket();
       socket.off('connect');
@@ -284,7 +294,7 @@ export const useSocket = () => {
       socket.off('ENTRY_REPORTED_OK', onEntryReportedOk);
       socket.off('ENTRY_REPORTED_ERROR', onEntryReportedError);
     };
-  }, [token, user]);
+  }, [user]);
 
   const submitAttempt = useCallback((answer: string) => {
     socket.emit('ATTEMPT', { message: answer });

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { config } from '@/lib/config';
+import { getIdToken, auth } from '@/lib/firebase';
 
 export const api = axios.create({
   baseURL: `${config.apiUrl}/v1`,
@@ -8,8 +9,8 @@ export const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+api.interceptors.request.use(async (config) => {
+  const token = await getIdToken();
   if (token) {
     config.headers.Authorization = token;
   }
@@ -18,9 +19,10 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      const { signOut } = await import('firebase/auth');
+      await signOut(auth);
       window.location.href = '/login';
     }
     return Promise.reject(error);
