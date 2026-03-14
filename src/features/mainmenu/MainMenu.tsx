@@ -1,15 +1,28 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useSettingsStore } from '@/stores/settingsStore';
 import { systemApi } from '@/api/endpoints';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 import { Disclaimer } from '@/components/Disclaimer';
 
 const RIGHTS_LABELS = ['', 'Moderator', 'Admin'];
 
+const GAME_RULES = `• An entry is displayed every round
+• Every player has 3 free attempts available to submit the correct answer
+• Additional attempts will cost 1 point
+• The answers are case insensitive
+• Every 5 seconds, a new random character is revealed from the answer (defined as a split)
+• Entries range from 10 to 100 points in value (based on their difficulty)
+• Their value decreases as more characters are revealed
+• The first player to submit the correct answer wins the prize and the round is over
+• This is a real-time multiplayer game, be nice to each other 😉`;
+
 export const MainMenu = () => {
   const navigate = useNavigate();
   const { user, logout, fetchUser } = useAuthStore();
+  const showRules = useSettingsStore((state) => state.showRules);
+  const [showRulesDialog, setShowRulesDialog] = useState(false);
 
   useEffect(() => {
     fetchUser();
@@ -23,6 +36,14 @@ export const MainMenu = () => {
 
   const getRightsLabel = (rights: number) => {
     return RIGHTS_LABELS[rights] || 'User';
+  };
+
+  const handlePlayNow = () => {
+    if (showRules) {
+      setShowRulesDialog(true);
+    } else {
+      navigate('/game');
+    }
   };
 
   return (
@@ -69,7 +90,7 @@ export const MainMenu = () => {
         {/* Buttons */}
         <div className="w-full max-w-xs space-y-3">
           <button
-            onClick={() => navigate('/game')}
+            onClick={handlePlayNow}
             className="w-full btn-primary"
           >
             Play Now
@@ -108,6 +129,33 @@ export const MainMenu = () => {
           <a href="/privacy-policy.html" className="text-xs text-gray-500 hover:text-primary underline">Privacy Policy</a>
         </div>
       </div>
+
+      {/* Rules Dialog */}
+      {showRulesDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Game rules</h2>
+            <div className="text-gray-600 whitespace-pre-line mb-6">{GAME_RULES}</div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowRulesDialog(false)}
+                className="flex-1 py-2 bg-light-grey text-gray-700 rounded-lg hover:bg-dark-grey transition-colors"
+              >
+                Take me back
+              </button>
+              <button
+                onClick={() => {
+                  setShowRulesDialog(false);
+                  navigate('/game');
+                }}
+                className="flex-1 py-2 bg-primary text-white rounded-lg hover:brightness-110 transition-all"
+              >
+                Let's play
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

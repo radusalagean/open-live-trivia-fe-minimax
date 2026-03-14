@@ -29,11 +29,9 @@ export const SettingsPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const soundEffects = useSettingsStore((state) => state.soundEffects);
-  const notifications = useSettingsStore((state) => state.notifications);
   const relativeTime = useSettingsStore((state) => state.relativeTime);
   const showRules = useSettingsStore((state) => state.showRules);
   const setSoundEffects = useSettingsStore((state) => state.setSoundEffects);
-  const setNotifications = useSettingsStore((state) => state.setNotifications);
   const setRelativeTime = useSettingsStore((state) => state.setRelativeTime);
   const setShowRules = useSettingsStore((state) => state.setShowRules);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -115,10 +113,6 @@ export const SettingsPage = () => {
               <div className="flex items-center justify-between py-2">
                 <span className="text-gray-600">Sound Effects</span>
                 <Toggle enabled={soundEffects} onChange={setSoundEffects} />
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-gray-600">Notifications</span>
-                <Toggle enabled={notifications} onChange={setNotifications} />
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-gray-600">Relative Time</span>
