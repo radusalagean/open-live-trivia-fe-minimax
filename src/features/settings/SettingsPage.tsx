@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { authApi, systemApi } from '@/api/endpoints';
+import { formatDate } from '@/lib/dateTime';
 
 interface ToggleProps {
   enabled: boolean;
@@ -27,16 +28,14 @@ const Toggle = ({ enabled, onChange }: ToggleProps) => (
 export const SettingsPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const { 
-    soundEffects, 
-    notifications, 
-    relativeTime, 
-    showRules,
-    setSoundEffects,
-    setNotifications,
-    setRelativeTime,
-    setShowRules
-  } = useSettingsStore();
+  const soundEffects = useSettingsStore((state) => state.soundEffects);
+  const notifications = useSettingsStore((state) => state.notifications);
+  const relativeTime = useSettingsStore((state) => state.relativeTime);
+  const showRules = useSettingsStore((state) => state.showRules);
+  const setSoundEffects = useSettingsStore((state) => state.setSoundEffects);
+  const setNotifications = useSettingsStore((state) => state.setNotifications);
+  const setRelativeTime = useSettingsStore((state) => state.setRelativeTime);
+  const setShowRules = useSettingsStore((state) => state.setShowRules);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -98,7 +97,7 @@ export const SettingsPage = () => {
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-gray-600">Joined</span>
-                <span className="text-gray-800">{user?.joined ? new Date(user.joined).toLocaleDateString() : 'N/A'}</span>
+                <span className="text-gray-800">{user?.joined ? formatDate(user.joined, relativeTime) : 'N/A'}</span>
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-gray-600">Role</span>

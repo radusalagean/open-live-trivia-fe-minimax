@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { reportApi } from '@/api/endpoints';
-import { formatDateTime } from '@/lib/dateTime';
+import { useSettingsStore } from '@/stores/settingsStore';
+import { formatDate } from '@/lib/dateTime';
 import type { Report } from '@/types';
 
 export const ModerationPage = () => {
   const navigate = useNavigate();
+  const relativeTime = useSettingsStore((state) => state.relativeTime);
   const [activeTab, setActiveTab] = useState<'reported' | 'banned'>('reported');
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
@@ -149,7 +151,7 @@ export const ModerationPage = () => {
 
                   {/* Timestamp */}
                   <div className="mt-2 text-xs text-gray-400">
-                    {formatDateTime(report.lastReported)}
+                    {formatDate(report.lastReported, relativeTime)}
                   </div>
                 </div>
 
