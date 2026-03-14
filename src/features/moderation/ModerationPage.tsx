@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { reportApi } from '@/api/endpoints';
+import { formatDateTime } from '@/lib/dateTime';
 import type { Report } from '@/types';
 
 export const ModerationPage = () => {
@@ -61,11 +62,6 @@ export const ModerationPage = () => {
     } finally {
       setActionLoading(null);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
   return (
@@ -153,7 +149,7 @@ export const ModerationPage = () => {
 
                   {/* Timestamp */}
                   <div className="mt-2 text-xs text-gray-400">
-                    {formatDate(report.lastReported)}
+                    {formatDateTime(report.lastReported)}
                   </div>
                 </div>
 

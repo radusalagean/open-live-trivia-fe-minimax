@@ -1,13 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { leaderboardApi } from '@/api/endpoints';
+import { useSettingsStore } from '@/stores/settingsStore';
+import { formatRelativeTime } from '@/lib/dateTime';
 import type { LeaderboardEntry } from '@/types';
 import { Avatar } from '@/components/Avatar';
 
 const RIGHTS_LABELS = ['', 'MOD', 'ADMIN'];
 
+const formatLastSeen = (lastSeen: string, relativeTime: boolean): string => {
+  if (relativeTime) {
+    return formatRelativeTime(lastSeen);
+  }
+  return new Date(lastSeen).toLocaleDateString();
+};
+
 export const LeaderboardPage = () => {
   const navigate = useNavigate();
+  const { relativeTime } = useSettingsStore();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -116,6 +126,13 @@ export const LeaderboardPage = () => {
                       {getRightsLabel(entry.rights)}
                     </span>
                   )}
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  {entry.playing ? (
+                    <span className="text-xs text-green-600 font-medium">Playing</span>
+                  ) : entry.lastSeen ? (
+                    <span className="text-xs text-gray-500">Last seen {formatLastSeen(entry.lastSeen, relativeTime)}</span>
+                  ) : null}
                 </div>
               </div>
               

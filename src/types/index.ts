@@ -4,6 +4,8 @@ export interface User {
   rights: number;
   coins: number;
   joined: string;
+  lastSeen?: string;
+  playing?: boolean;
 }
 
 export interface AuthState {
