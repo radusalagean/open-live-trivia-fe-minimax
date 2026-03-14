@@ -5,7 +5,7 @@ interface GameStore extends GameState {
   setCategory: (category: string) => void;
   setClue: (clue: string) => void;
   setAnswer: (answer: string) => void;
-  setCurrentValue: (value: number) => void;
+  setCurrentValue: (value: number, animate?: boolean) => void;
   setSplitTimes: (elapsed: number, total: number) => void;
   setFreeAttemptsLeft: (count: number) => void;
   setEntryReported: (reported: boolean) => void;
@@ -24,6 +24,7 @@ interface GameStore extends GameState {
   clearPeerAttempts: () => void;
   setCoins: (coins: number) => void;
   updateCoins: (delta: number) => void;
+  setCoinsFromDiff: (fromDiff: boolean) => void;
   setStatus: (status: GameState['status']) => void;
   setRoundWon: (won: boolean) => void;
   setRevealedAnswer: (answer: string | undefined) => void;
@@ -37,6 +38,7 @@ const initialState: GameState = {
   clue: '',
   answer: '',
   currentValue: 0,
+  animateCurrentValue: false,
   elapsedSplitSeconds: 0,
   totalSplitSeconds: 0,
   freeAttemptsLeft: 3,
@@ -51,6 +53,7 @@ const initialState: GameState = {
   myAttempt: null,
   peerAttempts: [],
   coins: 0,
+  coinsFromDiff: false,
   status: 'waiting',
   timerResetCount: 0,
   roundWon: false,
@@ -66,7 +69,7 @@ export const useGameStore = create<GameStore>((set) => ({
   
   setAnswer: (answer) => set({ answer }),
   
-  setCurrentValue: (currentValue) => set({ currentValue }),
+  setCurrentValue: (currentValue, animate = false) => set({ currentValue, animateCurrentValue: animate }),
   
   setSplitTimes: (elapsed, total) => set({ 
     elapsedSplitSeconds: elapsed, 
@@ -111,9 +114,10 @@ export const useGameStore = create<GameStore>((set) => ({
   
   clearPeerAttempts: () => set({ peerAttempts: [], attempts: [] }),
   
-  setCoins: (coins) => set({ coins }),
+  setCoins: (coins) => set({ coins, coinsFromDiff: false }),
   
-  updateCoins: (delta) => set((state) => ({ coins: state.coins + delta })),
+  updateCoins: (delta) => set((state) => ({ coins: state.coins + delta, coinsFromDiff: true })),
+  setCoinsFromDiff: (fromDiff) => set({ coinsFromDiff: fromDiff }),
   
   setStatus: (status) => set({ status }),
   

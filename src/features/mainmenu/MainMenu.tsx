@@ -5,6 +5,7 @@ import { systemApi } from '@/api/endpoints';
 import { useEffect, useState } from 'react';
 import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 import { Disclaimer } from '@/components/Disclaimer';
+import { AnimatedCoins } from '@/components/AnimatedCoins';
 
 const RIGHTS_LABELS = ['', 'Moderator', 'Admin'];
 
@@ -84,7 +85,7 @@ export const MainMenu = () => {
         {/* Coins */}
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow mb-8">
           <img src="/coin.png" alt="Coins" className="w-6 h-6 align-middle" />
-          <span className="text-xl text-black font-bold align-bottom" style={{ fontFamily: '"Share Tech Mono", monospace' }}>{user?.coins?.toFixed(2) || '0.00'}</span>
+          <AnimatedCoins value={user?.coins || 0} animated={true} className="text-xl text-black font-bold align-bottom" />
         </div>
 
         {/* Buttons */}

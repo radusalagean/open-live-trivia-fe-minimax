@@ -39,6 +39,8 @@ export interface GameState {
   clue: string;
   answer: string;
   currentValue: number;
+  animateCurrentValue: boolean;
+  coinsFromDiff: boolean;
   elapsedSplitSeconds: number;
   totalSplitSeconds: number;
   freeAttemptsLeft: number;

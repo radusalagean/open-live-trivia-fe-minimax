@@ -29,6 +29,7 @@ export const useSocket = () => {
     clearPeerAttempts,
     updateCoins,
     setCoins,
+    setCoinsFromDiff,
     setStatus,
     setRoundWon,
     setRevealedAnswer,
@@ -100,11 +101,12 @@ export const useSocket = () => {
     }) => {
       console.log('WELCOME:', data);
       setCoins(data.userCoins);
+      setCoinsFromDiff(false);
       setEntryId(data.entryId);
       setCategory(data.category);
       setClue(data.clue);
       setAnswer(data.answer);
-      setCurrentValue(data.currentValue);
+      setCurrentValue(data.currentValue, false);
       setSplitTimes(data.elapsedSplitSeconds, data.totalSplitSeconds);
       setFreeAttemptsLeft(data.freeAttemptsLeft);
       setEntryReported(data.entryReported);
@@ -163,6 +165,7 @@ export const useSocket = () => {
         setSplitting(false);
         setRevealedAnswer(attempt.correctAnswer);
         setAnswer(attempt.correctAnswer || '');
+        useGameStore.getState().setCurrentValue(0, true); // drain pot to 0 with animation
       }
     };
 
@@ -179,7 +182,7 @@ export const useSocket = () => {
       setCategory(data.category);
       setClue(data.clue);
       setAnswer(data.answer);
-      setCurrentValue(data.currentValue);
+      setCurrentValue(data.currentValue, false);
       setGameState('split');
       setSplitting(true);
       setRevealed(false);
@@ -200,7 +203,7 @@ export const useSocket = () => {
       setSplitting(true);
       setGameState('split');
       setAnswer(data.answer);
-      setCurrentValue(data.currentValue);
+      setCurrentValue(data.currentValue, true);
       setRoundWon(false);
       setSplitTimes(0, currentTotalSplitSeconds);
       
@@ -215,6 +218,7 @@ export const useSocket = () => {
       setRevealed(true);
       setGameState('transition');
       setAnswer(data.answer);
+      setCurrentValue(0, true); // drain to 0 with animation
       setStatus('revealed');
     };
 

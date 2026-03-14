@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { stopAllSounds } from '@/lib/sounds';
 import { Avatar } from '@/components/Avatar';
+import { AnimatedCoins } from '@/components/AnimatedCoins';
 
 export const GamePage = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ export const GamePage = () => {
     clue,
     answer: currentAnswer,
     currentValue,
+    animateCurrentValue,
     totalSplitSeconds,
     elapsedSplitSeconds,
     entryReported,
@@ -36,6 +38,7 @@ export const GamePage = () => {
     players,
     attempts,
     coins,
+    coinsFromDiff,
     status,
     gameState,
     timerResetCount,
@@ -152,7 +155,7 @@ export const GamePage = () => {
         
         <div className="flex items-center gap-1">
           <img src="/coin.png" alt="Coins" className="w-5 h-5" />
-          <span className="font-bold text-gray-800" style={{ fontFamily: '"Share Tech Mono", monospace' }}>{coins.toFixed(2)}</span>
+          <AnimatedCoins value={coins} animated={coinsFromDiff} className="font-bold text-gray-800" />
         </div>
         
         <div className="flex items-center gap-2">
@@ -186,8 +189,8 @@ export const GamePage = () => {
               )}
               
               <div className="flex items-center gap-1 ml-auto">
-                <span className="text-gray-800 font-bold" style={{ fontFamily: '"Share Tech Mono", monospace' }}>{currentValue.toFixed(2)}</span>
-<img src="/coin.png" alt="Coins" className="w-5 h-5 align-middle" />
+                <AnimatedCoins value={currentValue} animated={animateCurrentValue} className="text-gray-800 font-bold" />
+                <img src="/coin.png" alt="Coins" className="w-5 h-5 align-middle" />
               </div>
 
               {/* Menu Button */}
