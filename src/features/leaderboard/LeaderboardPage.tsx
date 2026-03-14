@@ -15,14 +15,12 @@ export const LeaderboardPage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchLeaderboard = useCallback(async (pageNum: number, isRefresh = false) => {
+  const fetchLeaderboard = useCallback(async (pageNum: number) => {
     try {
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
+      setLoading(true);
       const response = await leaderboardApi.getLeaderboard(pageNum);
-      if (isRefresh) {
+      if (pageNum === 1) {
         setEntries(response.items);
       } else {
         setEntries((prev) => [...prev, ...response.items]);
@@ -32,25 +30,20 @@ export const LeaderboardPage = () => {
       console.error('Failed to fetch leaderboard:', error);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchLeaderboard(1, true);
+    fetchLeaderboard(1);
   }, [fetchLeaderboard]);
 
-  const handleRefresh = () => {
-    setPage(1);
-    fetchLeaderboard(1, true);
-  };
-
   const handleLoadMore = () => {
-    if (page < totalPages) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchLeaderboard(nextPage);
+    if (loading || page >= totalPages) {
+      return;
     }
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchLeaderboard(nextPage);
   };
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -82,13 +75,7 @@ export const LeaderboardPage = () => {
           ← Back
         </button>
         <h1 className="flex-1 text-center text-gray-800 font-bold text-lg">Leaderboard</h1>
-        <button
-          onClick={handleRefresh}
-          className="text-primary hover:text-primary-dark"
-          disabled={refreshing}
-        >
-          {refreshing ? '...' : '↻'}
-        </button>
+        <div className="w-12"></div>
       </div>
 
       {/* Leaderboard List */}
@@ -141,6 +128,15 @@ export const LeaderboardPage = () => {
             <div className="flex justify-center py-4">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
+          )}
+
+          {!loading && page < totalPages && (
+            <button
+              onClick={handleLoadMore}
+              className="w-full py-3 text-center text-primary hover:text-primary-dark font-medium"
+            >
+              Load More
+            </button>
           )}
 
           {!loading && entries.length === 0 && (
