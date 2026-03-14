@@ -52,8 +52,9 @@ export const systemApi = {
 
 export const reportApi = {
   getReports: async (page = 1, status?: string) => {
+    const banned = status === 'banned' ? 'true' : status === 'active' ? 'false' : undefined;
     const response = await api.get('/reported_entry/get_reports', { 
-      params: { page, status } 
+      params: { page, banned } 
     });
     return response.data;
   },
