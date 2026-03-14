@@ -1,22 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useAuthStore } from '@/stores/authStore';
-import { systemApi } from '@/api/endpoints';
+import { systemApi, authApi } from '@/api/endpoints';
 import { Disclaimer } from '@/components/Disclaimer';
 import { BuildInfoLabel } from '@/components/BuildInfoLabel';
 
 const FRONTEND_VERSION = '1.0.0';
+const USERNAME_MIN_LENGTH = 4;
+const USERNAME_MAX_LENGTH = 50;
+const USERNAME_CHECK_DEBOUNCE_MS = 500;
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { login, register } = useAuthStore();
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [versionWarning, setVersionWarning] = useState<string | null>(null);
+  const idTokenRef = useRef<string | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const checkServerVersion = async () => {
@@ -35,6 +41,78 @@ export const LoginPage = () => {
     checkServerVersion();
   }, []);
 
+  const checkUsernameAvailability = useCallback(async (usernameToCheck: string) => {
+    if (!usernameToCheck.trim()) {
+      setUsernameStatus('idle');
+      return;
+    }
+
+    if (usernameToCheck.length < USERNAME_MIN_LENGTH) {
+      setUsernameStatus('idle');
+      return;
+    }
+
+    setUsernameStatus('checking');
+    try {
+      await authApi.checkUsername(usernameToCheck);
+      setUsernameStatus('available');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosErr = err as { response?: { status?: number } };
+        if (axiosErr.response?.status === 409) {
+          setUsernameStatus('unavailable');
+          return;
+        }
+      }
+      setUsernameStatus('idle');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (!isRegistering || !username.trim()) {
+      setUsernameStatus('idle');
+      return;
+    }
+
+    if (username.length > USERNAME_MAX_LENGTH) {
+      setUsernameStatus('idle');
+      return;
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      checkUsernameAvailability(username);
+    }, USERNAME_CHECK_DEBOUNCE_MS);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [username, isRegistering, checkUsernameAvailability]);
+
+  const getUsernameValidationError = (): string | null => {
+    if (!username.trim()) return null;
+    if (username.length < USERNAME_MIN_LENGTH) {
+      return `Username must be at least ${USERNAME_MIN_LENGTH} characters`;
+    }
+    if (username.length > USERNAME_MAX_LENGTH) {
+      return `Username must be no more than ${USERNAME_MAX_LENGTH} characters`;
+    }
+    return null;
+  };
+
+  const canRegister = (): boolean => {
+    return (
+      username.trim().length >= USERNAME_MIN_LENGTH &&
+      username.length <= USERNAME_MAX_LENGTH &&
+      usernameStatus === 'available'
+    );
+  };
+
   const handleGoogleSignIn = async () => {
     setError('');
     setLoading(true);
@@ -43,14 +121,34 @@ export const LoginPage = () => {
       const idToken = await result.user.getIdToken();
       
       if (isRegistering) {
-        if (!username.trim()) {
-          setError('Username is required');
+        const validationError = getUsernameValidationError();
+        if (validationError) {
+          setError(validationError);
+          setLoading(false);
+          return;
+        }
+        if (!canRegister()) {
+          setError('Please enter a valid username');
           setLoading(false);
           return;
         }
         await register(idToken, username);
       } else {
-        await login(idToken);
+        try {
+          await login(idToken);
+        } catch (loginErr: unknown) {
+          if (loginErr && typeof loginErr === 'object' && 'response' in loginErr) {
+            const axiosErr = loginErr as { response?: { status?: number } };
+            if (axiosErr.response?.status === 404) {
+              idTokenRef.current = idToken;
+              setIsRegistering(true);
+              setError('');
+              setLoading(false);
+              return;
+            }
+          }
+          throw loginErr;
+        }
       }
       navigate('/');
     } catch (err: unknown) {
@@ -65,6 +163,24 @@ export const LoginPage = () => {
     }
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+    setError('');
+  };
+
+  const getUsernameStatusText = (): string | null => {
+    if (usernameStatus === 'checking') return 'Checking...';
+    if (usernameStatus === 'available') return 'Username available';
+    if (usernameStatus === 'unavailable') return 'Username unavailable';
+    return null;
+  };
+
+  const getUsernameStatusClass = (): string => {
+    if (usernameStatus === 'available') return 'text-green-600';
+    if (usernameStatus === 'unavailable') return 'text-error';
+    return 'text-gray-500';
+  };
+
   return (
     <div className="flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
@@ -76,15 +192,24 @@ export const LoginPage = () => {
         />
         
         {isRegistering && (
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-gray-600 text-sm mb-2">Username</label>
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
               className="w-full px-4 py-3 input-field"
               placeholder="Choose a username"
+              maxLength={USERNAME_MAX_LENGTH}
             />
+            {getUsernameValidationError() && (
+              <p className="mt-1 text-xs text-error">{getUsernameValidationError()}</p>
+            )}
+            {getUsernameStatusText() && (
+              <p className={`mt-1 text-xs ${getUsernameStatusClass()}`}>
+                {getUsernameStatusText()}
+              </p>
+            )}
           </div>
         )}
 
@@ -102,7 +227,7 @@ export const LoginPage = () => {
 
         <button
           onClick={handleGoogleSignIn}
-          disabled={loading}
+          disabled={loading || (isRegistering && !canRegister())}
           className="w-full py-3 px-4 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:brightness-110 transition-all"
         >
           {loading ? (
@@ -122,6 +247,7 @@ export const LoginPage = () => {
           onClick={() => {
             setIsRegistering(!isRegistering);
             setError('');
+            setUsernameStatus('idle');
           }}
           className="w-full mt-4 text-primary hover:text-primary-dark text-sm transition-colors"
         >
